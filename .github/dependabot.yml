@@ -1,0 +1,15 @@
+# Mantém as actions do CI atualizadas preservando o pin por hash de commit:
+# o Dependabot abre PRs trocando o hash e o comentário de versão.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    labels: ["ci"]
+    commit-message:
+      prefix: "ci"
+    open-pull-requests-limit: 5
