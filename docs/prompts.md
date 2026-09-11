@@ -114,6 +114,13 @@ Convenções:
   > Na versão instalada, imprima a assinatura de langchain.chat_models.init_chat_model, os defaults de model, temperature, timeout e max_retries de ChatGoogleGenerativeAI, a assinatura de with_structured_output e confirme os imports de StateGraph/START/END do langgraph e de tool do langchain_core.
 - **Resultado:** `init_chat_model(model, *, model_provider=None, ..., **kwargs)`; `ChatGoogleGenerativeAI` tem `temperature=0.7`, `timeout=None`, `max_retries=6` por padrão (o retry interno será zerado para o loop limitado do grafo ficar visível); `with_structured_output(schema, method='json_schema', *, include_raw=False)`; imports confirmados.
 
+### P-015 · Modelos de domínio e state do grafo (issue #2)
+- **Origem:** reconstruído (prompt sugerido na issue #2, ajustado ao que foi feito)
+- **Objetivo:** contratos de dados validados e state com reducers.
+- **Prompt:**
+  > Implemente em src/triagem/modelos.py os enums e modelos Pydantic v2 da seção 5 do docs/PRD.md (Chamado, AnaliseChamado, RespostaLLM, ArtigoRecuperado, ResultadoCatalogo, ResultadoTriagem), com strip de espaços antes da validação de tamanho, campos opcionais vazios convertidos para None, ambiente normalizado (minúsculas, sem acento) e campos extras ignorados para permitir metadados nos exemplos. Exponha uma constante com os cinco campos mínimos de saída exigidos pela rubrica. Em src/triagem/estado.py crie o TypedDict EstadoTriagem (total=False) com reducer operator.add em alertas, erros e caminho_percorrido. Escreva testes cobrindo entrada válida, vazia, curta, longa, título ausente, ambiente inválido e normalizado, palavras-chave deduplicadas, confiança fora do intervalo, campos mínimos no JSON de saída e presença dos reducers no state.
+- **Resultado:** 26 testes verdes. Desvio consciente do PRD: `palavras_chave` aceita 1–10 itens (o prompt pedirá 3–8) para não descartar respostas quase corretas do modelo; registrado no docstring do modelo.
+
 ---
 
 ## Fase 2 — Grafo LangGraph e CLI (pendente)
