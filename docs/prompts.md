@@ -173,3 +173,17 @@ Convenções:
 - **Prompt:**
   > Resolva via API do GitHub o hash de commit das tags actions/checkout@v7.0.1 e astral-sh/setup-uv@v10.1.0, dereferenciando tags anotadas se necessário, e troque os `uses:` do ci.yml para `owner/action@<sha40> # vX.Y.Z`. Crie .github/dependabot.yml para github-actions com verificação semanal, label `ci` e prefixo de commit `ci`. Atualize a seção E1 de docs/extensoes.md explicando o pin por hash e registre tudo em docs/prompts.md.
 - **Resultado:** `checkout@3d3c42e…` (v7.0.1) e `setup-uv@bec219d…` (v10.1.0); o hash da `setup-uv` coincide com o recomendado no README da action. Dependabot semanal às segundas, 9h de Brasília.
+
+### P-023 · Continuar para a Fase 2
+- **Origem:** usuário
+- **Objetivo:** iniciar a issue #4 no fluxo padrão.
+- **Prompt:**
+  > pode seguir
+- **Resultado:** issue #4 executada em branch própria com PR.
+
+### P-024 · Observabilidade com JSON Lines e run_id (issue #4)
+- **Origem:** reconstruído (prompt sugerido na issue #4, ajustado ao que foi feito)
+- **Objetivo:** permitir reconstruir o caminho de qualquer execução só com o log.
+- **Prompt:**
+  > Implemente src/triagem/observabilidade.py com logging da stdlib: um RegistroExecucao por execução, com run_id (uuid4), handler de arquivo logs/<run_id>.jsonl sempre em JSON Lines (campos fixos timestamp, run_id, nivel, evento mais os detalhes) e handler de stderr em JSON ou texto legível conforme LOG_FORMATO. Crie helpers para os eventos da seção 9 do PRD, um context manager medir_node que registra node_inicio/node_fim com duração e, em exceção, um evento erro com traceback antes de propagar, e uma função resumir_eventos que reconstrói nodes percorridos, roteamentos, tools, chamadas de LLM, erros e alertas a partir do JSONL. Sem dependência do LangGraph. Garanta idempotência dos handlers e um método fechar(). Teste tudo, inclusive o formato texto via capsys e o filtro de nível. Mantenha compatibilidade com Python 3.10.
+- **Resultado:** 10 testes novos (66 no total). Correção antes do PR: `datetime.UTC` só existe no 3.11; trocado por `timezone.utc` para a matriz 3.10 do CI passar. `resumir_eventos` normaliza `tool_erro` (tool → node, erro → tipo) para o resumo de erros ficar uniforme.
