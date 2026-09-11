@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.0 — 11/09/2026 |
+| Versão do PRD | 1.1 — 11/09/2026 (RF-43 e RF-44 revisados na issue #5) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -113,8 +113,8 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | RF-40 | `categoria` ∈ {`software`, `infraestrutura`, `suporte`, `indefinido`}. | P0 | 4 |
 | RF-41 | `prioridade` ∈ {`baixa`, `media`, `alta`, `critica`}. | P0 | 4 |
 | RF-42 | `impacto` (da análise) ∈ {`usuario_unico`, `equipe`, `multiplos_usuarios`, `toda_organizacao`}. | P0 | 5 |
-| RF-43 | Regra de rota em `classificar_risco`: `critico` se prioridade sugerida ∈ {`alta`, `critica`} **ou** (`ambiente = producao` e impacto ∈ {`multiplos_usuarios`, `toda_organizacao`}) **ou** presença de termos de indisponibilidade (lista configurável: "fora do ar", "indisponível", "não acessa", "todos os usuários", "perda de dados", "vazamento"); senão `simples`. | P0 | 5 |
-| RF-44 | Regra de elevação: se `ambiente = producao` e prioridade sugerida = `media`, elevar para `alta`. Registrar a elevação em `alertas`. | P0 | 5 |
+| RF-43 | Regra de rota em `classificar_risco`: `critico` se prioridade **final** ∈ {`alta`, `critica`} **ou** (`ambiente = producao` e impacto ∈ {`multiplos_usuarios`, `toda_organizacao`}) **ou** presença de termos de indisponibilidade (lista configurável em `regras.py`: "fora do ar", "indisponível", "todos os usuários", "ninguém consegue", "sistema parado", "queda geral", "perda de dados", "vazamento"); senão `simples`. *Revisado em 11/09 (issue #5): "não acessa" saiu da lista por ser típico de problema de um único usuário.* | P0 | 5 |
+| RF-44 | Regras de elevação da prioridade (nunca rebaixam), cada uma com alerta próprio em `alertas`: (a) `ambiente = producao` e prioridade sugerida `media` → `alta`; (b) termo de indisponibilidade no texto → pelo menos `alta`; (c) `ambiente = producao` com impacto amplo → pelo menos `alta`. *Revisado em 11/09 (issue #5): (b) e (c) evitam rota crítica com prioridade baixa, que seria contraditória.* | P0 | 5 |
 | RF-45 | Regra de revisão humana: `requer_revisao_humana = true` se rota `critico`, **ou** categoria `indefinido`, **ou** `confianca < 0.6`, **ou** tool falhou, **ou** suspeita de prompt injection, **ou** falha tratada. | P0 | 4 |
 
 ### 3.6 Extensão E1 — Pipeline de CI
