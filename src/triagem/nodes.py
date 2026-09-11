@@ -47,6 +47,26 @@ GERAR_RESPOSTA = "gerar_resposta"
 TRATAR_FALHA = "tratar_falha"
 
 Node = Callable[[EstadoTriagem, Runtime[ContextoExecucao]], dict[str, Any]]
+
+# Indicadores de erro de quota/limite de requisições nos provedores (Gemini devolve 429
+# com RESOURCE_EXHAUSTED). Substituível nos testes.
+_SINAIS_QUOTA = ("429", "resource_exhausted", "resourceexhausted", "quota", "rate limit")
+_dormir = time.sleep
+_BACKOFF_MAXIMO_SEGUNDOS = 30.0
+
+
+def e_erro_de_quota(exc: BaseException) -> bool:
+    texto = f"{type(exc).__name__} {exc}".lower()
+    return any(sinal in texto for sinal in _SINAIS_QUOTA)
+
+
+def calcular_backoff(base: float, tentativa: int) -> float:
+    """Espera exponencial limitada: base, 2·base, 4·base... até o máximo."""
+    if base <= 0:
+        return 0.0
+    return min(base * (2 ** (tentativa - 1)), _BACKOFF_MAXIMO_SEGUNDOS)
+
+
 NodeInterno = Callable[[EstadoTriagem, Runtime[ContextoExecucao], dict[str, Any]], dict[str, Any]]
 
 
@@ -123,6 +143,12 @@ def analisar_chamado(
             ANALISAR_CHAMADO, ctx.cfg.nome_modelo, tentativa, duracao, sucesso=False, erro=erro
         )
         detalhes["sucesso"] = False
+        # Backoff só quando há nova tentativa pela frente e o erro é de quota (RNF-03).
+        if tentativa < ctx.cfg.max_tentativas_llm and e_erro_de_quota(exc):
+            espera = calcular_backoff(ctx.cfg.llm_backoff_base_segundos, tentativa)
+            detalhes["backoff_s"] = espera
+            if espera > 0:
+                _dormir(espera)
         return {
             "analise": None,
             "tentativas_llm": tentativa,
