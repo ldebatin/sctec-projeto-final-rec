@@ -91,6 +91,29 @@ Convenções:
 
 ---
 
-## Fase 1 — Scaffold e modelos (pendente)
+## Fase 1 — Scaffold e modelos (11/09/2026)
 
-_(entradas serão adicionadas conforme a implementação avançar)_
+### P-012 · Iniciar a Fase 1
+- **Origem:** usuário
+- **Objetivo:** executar as issues #1, #2 e #3 do Project.
+- **Prompt:**
+  > pode iniciar a fase 1
+- **Resultado:** issues executadas em sequência, cada uma em um commit próprio com `Closes #N`, e status atualizado no Project.
+
+### P-013 · Scaffold do projeto (issue #1)
+- **Origem:** reconstruído (prompt sugerido na issue #1, ajustado ao que foi feito)
+- **Objetivo:** base reproduzível com segredos protegidos.
+- **Prompt:**
+  > Crie o scaffold conforme a seção 13 do docs/PRD.md usando uv: pyproject.toml com as dependências listadas e build backend uv_build, ruff configurado (excluindo Markdown do formatador), marcador pytest `live`, .env.example com as variáveis da seção 14, estrutura de pastas com .gitkeep, README mínimo e um esqueleto de CLI Typer com o comando `versao` para validar o entry point. Verifique se o uv já tem um Python mais novo que o 3.10 local; se tiver, fixe-o em .python-version mantendo requires-python >= 3.10. Rode uv sync, ruff check, ruff format --check e pytest, e liste as versões resolvidas das dependências principais.
+- **Resultado:** Python 3.12.14 (já baixado pelo uv) fixado em `.python-version`; `requires-python >= 3.10` mantido para o CI. Versões resolvidas: langgraph 1.2.11, langchain 1.4.0, langchain-core 1.6.3, langchain-google-genai 4.4.0, pydantic 2.13.5, typer 0.27.2, pytest 9.1.1, ruff 0.16.7. Dois ajustes necessários: `extend-exclude = ["*.md"]` no ruff (o 0.16 formata blocos de código em Markdown) e `@app.callback()` no Typer (um único comando vira comando raiz sem isso). Questão Q3 do PRD resolvida.
+
+### P-014 · Confirmar APIs vigentes das bibliotecas (questão Q2)
+- **Origem:** reconstruído
+- **Objetivo:** não codar contra assinaturas desatualizadas.
+- **Prompt:**
+  > Na versão instalada, imprima a assinatura de langchain.chat_models.init_chat_model, os defaults de model, temperature, timeout e max_retries de ChatGoogleGenerativeAI, a assinatura de with_structured_output e confirme os imports de StateGraph/START/END do langgraph e de tool do langchain_core.
+- **Resultado:** `init_chat_model(model, *, model_provider=None, ..., **kwargs)`; `ChatGoogleGenerativeAI` tem `temperature=0.7`, `timeout=None`, `max_retries=6` por padrão (o retry interno será zerado para o loop limitado do grafo ficar visível); `with_structured_output(schema, method='json_schema', *, include_raw=False)`; imports confirmados.
+
+---
+
+## Fase 2 — Grafo LangGraph e CLI (pendente)

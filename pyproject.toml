@@ -1,0 +1,55 @@
+[project]
+name = "triagem-chamados"
+version = "0.1.0"
+description = "Agente inteligente de triagem de chamados técnicos com LangGraph"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Luiz Fernando Debatin" }]
+dependencies = [
+    "langgraph>=1.0",
+    "langchain>=1.0",
+    "langchain-google-genai>=4.0",
+    "pydantic>=2.9",
+    "python-dotenv>=1.0",
+    "rank-bm25>=0.2.2",
+    "typer>=0.15",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+triagem = "triagem.cli:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["uv_build>=0.8,<1"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "triagem"
+module-root = "src"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+markers = [
+    "live: testes que chamam o provedor de LLM real (exigem GOOGLE_API_KEY; excluídos no CI)",
+]
