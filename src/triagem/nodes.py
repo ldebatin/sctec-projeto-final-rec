@@ -17,10 +17,12 @@ from pydantic import ValidationError
 from triagem.contexto import ContextoExecucao
 from triagem.estado import EstadoTriagem
 from triagem.modelos import (
+    Ambiente,
     AnaliseChamado,
     Categoria,
     Chamado,
     Prioridade,
+    ResultadoCatalogo,
     ResultadoTriagem,
 )
 from triagem.prompts import montar_mensagens_analise
@@ -31,6 +33,7 @@ from triagem.regras import (
     motivos_revisao_humana,
 )
 from triagem.retrieval import ErroBaseConhecimento, montar_consulta, obter_base
+from triagem.tools.catalogo import NOME_TOOL, ErroCatalogoIndisponivel, criar_tool_catalogo
 
 # Nomes dos nodes (também usados nas edges e nos logs).
 VALIDAR_ENTRADA = "validar_entrada"
@@ -193,9 +196,55 @@ def consultar_base(
 def consultar_tool(
     state: EstadoTriagem, runtime: Runtime[ContextoExecucao], detalhes: dict[str, Any]
 ) -> dict[str, Any]:
-    """Aciona a tool de catálogo de serviços. Implementação completa na issue #9."""
-    detalhes["implementado"] = False
-    return {"tool_resultado": None}
+    """Aciona ``consultar_catalogo_servicos`` na rota crítica (RF-20 a RF-23).
+
+    Toda falha vira ``ResultadoCatalogo.ok = False`` e um item em ``erros``; o fluxo
+    segue para ``gerar_resposta``, que exigirá revisão humana (``tool_falhou``).
+    """
+    ctx = runtime.context
+    chamado, analise = state["chamado"], state["analise"]
+    assert chamado is not None and analise is not None
+
+    servico = analise.servico_mencionado or chamado.servico
+    if not servico:
+        resultado = ResultadoCatalogo.falha(
+            "servico_nao_identificado",
+            "Nem a análise nem o chamado identificam o serviço afetado; "
+            "confirme com o solicitante.",
+        )
+    else:
+        ambiente = None if chamado.ambiente is Ambiente.NAO_INFORMADO else chamado.ambiente
+        parametros = {"servico": servico, "ambiente": ambiente}
+        ctx.registro.tool_chamada(
+            NOME_TOOL, {"servico": servico, "ambiente": ambiente.value if ambiente else None}
+        )
+        tool = criar_tool_catalogo(
+            ctx.cfg.raiz_dados / "catalogo_servicos.json", ctx.cfg.simular_falha_tool
+        )
+        try:
+            resultado = tool.invoke(parametros)
+        except ValidationError as exc:
+            resultado = ResultadoCatalogo.falha("parametro_invalido", str(exc).splitlines()[0])
+        except ErroCatalogoIndisponivel as exc:
+            resultado = ResultadoCatalogo.falha("catalogo_indisponivel", str(exc))
+        except Exception as exc:  # integração nunca derruba o fluxo (RF-23)
+            resultado = ResultadoCatalogo.falha(
+                "catalogo_indisponivel", f"{type(exc).__name__}: {exc}"
+            )
+
+    detalhes["ok"] = resultado.ok
+    detalhes["servico_id"] = resultado.servico_id
+    detalhes["status_atual"] = resultado.status_atual
+    if not resultado.ok:
+        detalhes["erro"] = resultado.erro
+        ctx.registro.tool_erro(
+            NOME_TOOL, resultado.erro or "desconhecido", resultado.mensagem or ""
+        )
+        return {
+            "tool_resultado": resultado,
+            "erros": [f"tool_{resultado.erro}: {resultado.mensagem}"],
+        }
+    return {"tool_resultado": resultado}
 
 
 _ACAO_PADRAO = {

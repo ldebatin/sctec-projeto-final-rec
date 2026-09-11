@@ -1,0 +1,90 @@
+[
+  {
+    "id": "portal-clientes",
+    "nome": "Portal de Clientes",
+    "aliases": ["portal", "portal web", "portal do cliente", "site de clientes", "area do cliente"],
+    "equipe_responsavel": "Squad Portal",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "ambientes": ["producao", "homologacao"],
+    "runbook": "1. Verificar health check em /saude e o painel do gateway. 2. Checar deploy nas últimas 4h e acionar rollback se necessário. 3. Verificar pool de conexões com o banco e a API de Pagamentos. 4. Comunicar no canal #status-portal a cada 30 min.",
+    "contato_escalonamento": "plantao-portal@empresa.exemplo | ramal 4100"
+  },
+  {
+    "id": "erp",
+    "nome": "ERP Corporativo",
+    "aliases": ["erp", "sistema financeiro", "sistema contabil", "modulo fiscal"],
+    "equipe_responsavel": "Sustentação ERP",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "ambientes": ["producao", "homologacao"],
+    "runbook": "1. Verificar consumo do servidor de aplicação e sessões presas. 2. Identificar relatórios em execução prolongada no banco. 3. Reiniciar o serviço de aplicação fora do horário de fechamento. 4. Registrar capacidade para o comitê mensal.",
+    "contato_escalonamento": "sustentacao-erp@empresa.exemplo | ramal 4200"
+  },
+  {
+    "id": "api-pagamentos",
+    "nome": "API de Pagamentos",
+    "aliases": ["api pagamentos", "pagamentos", "gateway de pagamento", "checkout"],
+    "equipe_responsavel": "Squad Pagamentos",
+    "criticidade": "alta",
+    "status_atual": "degradado",
+    "ambientes": ["producao", "homologacao"],
+    "runbook": "1. Consultar o incidente aberto no painel de status (degradação conhecida: latência no adquirente). 2. Verificar taxa de erro 5xx e fila de retentativas. 3. Acionar o adquirente se a latência passar de 5 s. 4. Não reiniciar o serviço sem alinhar com o plantão.",
+    "contato_escalonamento": "plantao-pagamentos@empresa.exemplo | ramal 4300"
+  },
+  {
+    "id": "vpn",
+    "nome": "VPN Corporativa",
+    "aliases": ["vpn", "acesso remoto", "cliente vpn", "concentrador vpn"],
+    "equipe_responsavel": "Redes e Conectividade",
+    "criticidade": "media",
+    "status_atual": "operacional",
+    "ambientes": ["producao"],
+    "runbook": "1. Verificar o concentrador (CPU, sessões ativas, licenças). 2. Validar certificado do gateway. 3. Testar autenticação contra o AD. 4. Se houver quedas em massa, alternar para o concentrador secundário.",
+    "contato_escalonamento": "redes@empresa.exemplo | ramal 4400"
+  },
+  {
+    "id": "servidor-arquivos",
+    "nome": "Servidor de Arquivos",
+    "aliases": ["servidor de arquivos", "file server", "pasta compartilhada", "unidade de rede", "compartilhamento"],
+    "equipe_responsavel": "Infraestrutura",
+    "criticidade": "media",
+    "status_atual": "operacional",
+    "ambientes": ["producao"],
+    "runbook": "1. Verificar espaço em disco e serviço de compartilhamento. 2. Conferir permissões do grupo de segurança da pasta. 3. Validar replicação entre os nós. 4. Restaurar do snapshot em caso de perda de dados.",
+    "contato_escalonamento": "infra@empresa.exemplo | ramal 4500"
+  },
+  {
+    "id": "banco-dados",
+    "nome": "Banco de Dados Corporativo",
+    "aliases": ["banco de dados", "banco", "database", "sql", "cluster de banco"],
+    "equipe_responsavel": "DBA",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "ambientes": ["producao", "homologacao", "desenvolvimento"],
+    "runbook": "1. Verificar disponibilidade da instância primária e replicação. 2. Checar espaço em disco e locks prolongados. 3. Não executar limpeza de arquivos sem o DBA. 4. Em falha da primária, promover a réplica conforme procedimento de failover.",
+    "contato_escalonamento": "dba@empresa.exemplo | ramal 4600"
+  },
+  {
+    "id": "active-directory",
+    "nome": "Active Directory",
+    "aliases": ["ad", "active directory", "dominio", "contas de usuario", "autenticacao", "login de rede"],
+    "equipe_responsavel": "Identidade e Acessos",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "ambientes": ["producao"],
+    "runbook": "1. Verificar saúde dos controladores de domínio e replicação. 2. Conferir bloqueios em massa (possível ataque de força bruta). 3. Validar sincronização com o provedor de identidade em nuvem. 4. Escalar para segurança se houver padrão de tentativas indevidas.",
+    "contato_escalonamento": "identidade@empresa.exemplo | ramal 4700"
+  },
+  {
+    "id": "email-corporativo",
+    "nome": "E-mail Corporativo",
+    "aliases": ["email", "e-mail", "outlook", "exchange", "correio", "caixa postal"],
+    "equipe_responsavel": "Colaboração",
+    "criticidade": "media",
+    "status_atual": "operacional",
+    "ambientes": ["producao"],
+    "runbook": "1. Testar webmail para separar problema de cliente de problema de serviço. 2. Verificar filas de entrega e cotas. 3. Checar reputação do domínio e bloqueios de saída. 4. Comunicar indisponibilidade pelo canal alternativo.",
+    "contato_escalonamento": "colaboracao@empresa.exemplo | ramal 4800"
+  }
+]

@@ -94,7 +94,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 |---|---|---|---|
 | RF-20 | Tool `consultar_catalogo_servicos(servico, ambiente)` com schema de argumentos Pydantic e saída `ResultadoCatalogo` tipada. | P0 | 6 |
 | RF-21 | Validar parâmetros: `servico` string não vazia, até 100 caracteres, normalizada (minúsculas, sem espaços extras); `ambiente` opcional em enum. | P0 | 6, 8 |
-| RF-22 | Resolver o serviço por nome ou alias no `data/catalogo_servicos.json` e retornar equipe responsável, criticidade, status atual, runbook e contato de escalonamento. | P0 | 6 |
+| RF-22 | Resolver o serviço por nome ou alias no `data/catalogo_servicos.json` e retornar equipe responsável, criticidade, status atual, runbook e contato de escalonamento. *Entregue na issue #9 com 8 serviços (API de Pagamentos com status `degradado`) e resolução também por alias contido na frase.* | P0 | 6 |
 | RF-23 | Tratar falhas: serviço não encontrado, serviço não identificado pela análise, catálogo indisponível ou corrompido, falha simulada (`SIMULAR_FALHA_TOOL=1`). A falha vira `tool_resultado.ok = false` e o fluxo segue para `gerar_resposta` com `requer_revisao_humana = true`. | P0 | 6, 8 |
 
 ### 3.4 Contexto e base de conhecimento
