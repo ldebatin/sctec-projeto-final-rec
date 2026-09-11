@@ -68,6 +68,27 @@ Convenções:
   > No PRD, inclua uma tabela de casos de borda (entrada vazia ou enorme, chamado fora do domínio, chamado em inglês, vários problemas no mesmo chamado, serviço não identificado, apelidos de serviço, LLM indisponível ou fora do schema, chave ausente, catálogo corrompido, base sem artigo relevante, prompt injection, dados pessoais) com o comportamento esperado em cada um. Inclua também riscos com probabilidade, impacto e mitigação, e uma tabela de rastreabilidade critério da rubrica → evidência → requisitos.
 - **Resultado:** seções 15, 19 e 20 do PRD.
 
+### P-009 · Commit inicial, GitHub Project e issues por entregável
+- **Origem:** usuário
+- **Objetivo:** iniciar o histórico incremental e transformar o PRD em um plano de trabalho rastreável.
+- **Prompt:**
+  > 1 - Faça o commit inicial com o prd, 2 - crie um project no gitgub para esse repositório, 3 - Com base no prd divida em entregáveis e abra as issues desses entregáveis no project
+- **Resultado:** commit `d95bda2` (PRD, diário de prompts e `.gitignore`); Project "Triagem de Chamados — Recuperação SENAI" (https://github.com/users/ldebatin/projects/6) vinculado ao repositório; 21 issues abertas, todas no Project com status Todo.
+
+### P-010 · Decompor o PRD em entregáveis
+- **Origem:** reconstruído
+- **Objetivo:** definir a granularidade e a estrutura das issues.
+- **Prompt:**
+  > Divida o PRD em entregáveis de meio dia a um dia de trabalho, agrupados em milestones que sigam o cronograma da seção 18 (uma milestone por fase, com data). Cada issue deve ter objetivo, escopo em checkboxes, critérios de aceite verificáveis, referências aos requisitos e critérios da rubrica no PRD, dependências entre issues e um prompt sugerido para o assistente de IA executar a tarefa. Use labels de prioridade (P0 núcleo, P1 extensão, P2 desejável) e de área. Adicione todas ao Project com status Todo.
+- **Resultado:** 6 milestones (Fase 1 a Fase 6, 11/09 a 17/09), 14 labels, 21 issues: #1–#3 scaffold e modelos; #4–#7 grafo e CLI; #8–#11 contexto, tool e Gemini; #12–#15 cenários e extensões; #16–#19 documentação e evidências; #20–#21 vídeo e entrega.
+
+### P-011 · Corrigir referências cruzadas entre issues
+- **Origem:** reconstruído
+- **Objetivo:** garantir que as dependências apontem para as issues corretas após inserção de uma issue P2 no meio da sequência.
+- **Prompt:**
+  > Liste todas as referências `#N` na seção Dependências de cada issue aberta e confira se o título da issue referenciada corresponde à dependência pretendida. Corrija as divergentes via API e imprima a tabela final de dependências.
+- **Resultado:** issues #18, #20 e #21 corrigidas; tabela de dependências verificada.
+
 ---
 
 ## Fase 1 — Scaffold e modelos (pendente)
