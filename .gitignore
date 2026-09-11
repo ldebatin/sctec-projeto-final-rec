@@ -1,0 +1,23 @@
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+
+# Logs de execução (evidências curadas ficam em docs/evidencias/)
+logs/
+
+# IDE e sistema
+.vscode/
+.idea/
+.DS_Store
