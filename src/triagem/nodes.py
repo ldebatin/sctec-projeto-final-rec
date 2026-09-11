@@ -29,10 +29,14 @@ from triagem.modelos import (
 )
 from triagem.prompts import montar_mensagens_analise, montar_mensagens_resposta
 from triagem.regras import (
+    ALERTA_INJECAO,
+    ALERTA_SEGREDO_REDIGIDO,
     MOTIVO_FALHA_TRATADA,
     MOTIVO_SEM_CONTEXTO,
     classificar_risco,
+    detectar_injecao,
     motivos_revisao_humana,
+    redigir_segredos,
 )
 from triagem.retrieval import ErroBaseConhecimento, montar_consulta, obter_base
 from triagem.tools.catalogo import NOME_TOOL, ErroCatalogoIndisponivel, criar_tool_catalogo
@@ -112,7 +116,15 @@ def validar_entrada(
         detalhes["erros"] = len(erros)
         return {"chamado": None, "erros": erros}
     detalhes["valida"] = True
-    return {"chamado": chamado}
+    saida: dict[str, Any] = {"chamado": chamado}
+
+    # Entrada não confiável (RF-61): sinaliza, registra e força revisão humana; não bloqueia.
+    padroes = detectar_injecao(f"{chamado.titulo}\n{chamado.descricao}")
+    detalhes["suspeita_injecao"] = bool(padroes)
+    if padroes:
+        runtime.context.registro.alerta_seguranca(ALERTA_INJECAO, padroes)
+        saida["alertas"] = [ALERTA_INJECAO]
+    return saida
 
 
 @instrumentar(ANALISAR_CHAMADO)
@@ -132,7 +144,7 @@ def analisar_chamado(
     inicio = time.perf_counter()
     try:
         analise = ctx.llm.with_structured_output(AnaliseChamado).invoke(
-            montar_mensagens_analise(chamado)
+            montar_mensagens_analise(chamado, ALERTA_INJECAO in state.get("alertas", []))
         )
         if not isinstance(analise, AnaliseChamado):
             analise = AnaliseChamado.model_validate(analise)
@@ -336,7 +348,15 @@ def gerar_resposta(
     inicio = time.perf_counter()
     try:
         resposta = ctx.llm.with_structured_output(RespostaLLM).invoke(
-            montar_mensagens_resposta(chamado, analise, rota, prioridade, contexto, tool)
+            montar_mensagens_resposta(
+                chamado,
+                analise,
+                rota,
+                prioridade,
+                contexto,
+                tool,
+                suspeita_injecao=ALERTA_INJECAO in state.get("alertas", []),
+            )
         )
         if not isinstance(resposta, RespostaLLM):
             resposta = RespostaLLM.model_validate(resposta)
@@ -364,6 +384,14 @@ def gerar_resposta(
         alertas_novos.append(ALERTA_RESPOSTA_FALLBACK)
         erros_novos.append(f"resposta_falhou: {erro}")
         detalhes["fallback"] = True
+
+    # Nenhum segredo da configuração sai na resposta, mesmo se o modelo for manipulado.
+    textos = [redigir_segredos(t or "", [ctx.cfg.api_key]) for t in (resumo, acao, justificativa)]
+    if any(redigido for _, redigido in textos):
+        alertas_novos.append(ALERTA_SEGREDO_REDIGIDO)
+        ctx.registro.alerta_seguranca(ALERTA_SEGREDO_REDIGIDO, ["api_key"])
+    resumo, acao = textos[0][0], textos[1][0]
+    justificativa = textos[2][0] or None
 
     fontes = [artigo.id for artigo in contexto]
     if tool is not None and tool.ok and tool.servico_id:

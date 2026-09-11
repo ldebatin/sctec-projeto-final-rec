@@ -253,3 +253,14 @@ Convenções:
 - **Prompt:**
   > Sem a GOOGLE_API_KEY, implemente só o que não depende dela: em analisar_chamado, quando a falha for de quota (429, RESOURCE_EXHAUSTED, rate limit) e ainda houver tentativa, espere um backoff exponencial limitado (LLM_BACKOFF_BASE_SEGUNDOS, padrão 2 s, máximo 30 s) antes de devolver ao grafo, registrando a espera no node_fim; sem espera na última tentativa nem em erros que não são de quota. Torne a espera substituível nos testes. Crie tests/test_live.py marcado live com dois testes ponta a ponta (exemplos 01 e 02) que são pulados automaticamente sem chave. Atualize .env.example e o PRD. Abra o PR sem fechar a issue e registre a pendência.
 - **Resultado:** 10 testes novos (196 no total, mais 2 live pulados). Pendente na #11, dependente da chave: confirmar o modelo flash do tier gratuito, rodar os 7 exemplos com o Gemini, salvar saídas e logs em docs/evidencias/ e calibrar LIMIAR_BM25 e LIMIAR_CONFIANCA.
+
+---
+
+## Fase 4 — Cenários e extensões (iniciada em 11/09/2026)
+
+### P-034 · Extensão E2: prompt injection com comportamento seguro (issue #14)
+- **Origem:** reconstruído (prompt sugerido na issue #14, ajustado ao que foi feito)
+- **Objetivo:** entrada não confiável sinalizada e neutralizada em camadas (RF-60 a RF-63).
+- **Prompt:**
+  > Em regras.py, implemente detectar_injecao(texto) com padrões rotulados (pt-BR e inglês) sobre o texto normalizado: ignorar instruções, system prompt, mudança de papel, exfiltração de segredo, instrução dirigida ao triador, forçar classificação ou formato, "sem revisão humana", jailbreak; e redigir_segredos(texto, segredos). Em validar_entrada, se houver padrões, registre alerta_seguranca com os rótulos e adicione o alerta possivel_prompt_injection sem bloquear o chamado. Anexe um aviso extra ao system prompt das duas chamadas quando houver suspeita. Em gerar_resposta, substitua qualquer ocorrência literal da chave de API por [REDIGIDO] com alerta segredo_redigido. Testes: 12 positivos e 5 chamados legítimos sem disparo, T7 com o exemplo 06 e uma análise manipulada para baixa (alerta, revisão humana, rota crítica e prioridade alta mantidas, aviso nos prompts, alerta antes do LLM no log), redação da chave vazada pelo modelo e prompts com delimitadores. Documente a E2 em docs/extensoes.md com ameaça, controles em camadas, evidências e limitação.
+- **Resultado:** 24 testes novos (220 no total). A evidência com o Gemini real do exemplo 06 fica pendente da chave (issue #11).

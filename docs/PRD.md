@@ -130,7 +130,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | ID | Requisito | Prioridade | Rubrica |
 |---|---|---|---|
 | RF-60 | Detector determinístico `detectar_injecao(texto)` com padrões (pt-BR e inglês): "ignore as instruções anteriores", "ignore previous instructions", "system prompt", "você agora é", "revele/mostre sua chave", "responda apenas com", "classifique como baixa" etc. Retorna lista de padrões encontrados. | P1 | 13 |
-| RF-61 | Em `validar_entrada`, suspeita de injeção adiciona `possivel_prompt_injection` a `alertas`, gera log `alerta_seguranca` e força `requer_revisao_humana = true`, sem interromper o fluxo. | P1 | 13 |
+| RF-61 | Em `validar_entrada`, suspeita de injeção adiciona `possivel_prompt_injection` a `alertas`, gera log `alerta_seguranca` e força `requer_revisao_humana = true`, sem interromper o fluxo. *Entregue na issue #14, mais dois controles adicionais: aviso extra anexado aos prompts quando há suspeita e redação de segredos (`[REDIGIDO]`, alerta `segredo_redigido`) na saída.* | P1 | 13 |
 | RF-62 | Prompts do agente delimitam o conteúdo do chamado com marcadores explícitos e instruem o modelo a tratá-lo como dado, nunca como instrução. | P1 | 13 |
 | RF-63 | Chamado adversarial em `data/exemplos/` e teste automatizado provando que a prioridade não é rebaixada pela instrução injetada e que o alerta é emitido. | P1 | 13 |
 
