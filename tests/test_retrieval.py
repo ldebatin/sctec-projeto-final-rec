@@ -154,12 +154,17 @@ def test_base_injetada_tem_precedencia(cfg, registro, tmp_path):
         "tags: [senha, active directory]\n---\n## Procedimento\n1. Resetar.",
         encoding="utf-8",
     )
-    # Segundo artigo para o IDF do BM25 ser positivo (ver docstring de buscar).
-    (tmp_path / "outro.md").write_text(
-        "---\nid: kb-outro\ntitulo: Impressora offline\ncategoria: infraestrutura\n"
-        "tags: [impressora]\n---\n## Procedimento\n1. Reiniciar o spooler.",
-        encoding="utf-8",
-    )
+    # Mais dois artigos: o IDF do BM25 só fica positivo para termos presentes em menos
+    # da metade dos documentos (com 2 artigos ele é exatamente zero).
+    for nome, titulo, tag in (
+        ("impressora", "Impressora offline", "impressora"),
+        ("vpn", "VPN sem conexão", "vpn"),
+    ):
+        (tmp_path / f"{nome}.md").write_text(
+            f"---\nid: kb-{nome}\ntitulo: {titulo}\ncategoria: infraestrutura\n"
+            f"tags: [{tag}]\n---\n## Procedimento\n1. Verificar o serviço.",
+            encoding="utf-8",
+        )
     base_teste = BaseConhecimento.carregar(tmp_path)
     resultado = executar_triagem(
         CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro, base=base_teste

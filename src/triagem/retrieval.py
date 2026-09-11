@@ -138,7 +138,7 @@ class BaseConhecimento:
         """Top-``k`` artigos com score BM25 ≥ ``limiar``, em ordem decrescente.
 
         Observação: o IDF do BM25 só é positivo para termos presentes em menos da metade
-        dos artigos; uma base com um único artigo produz scores não positivos.
+        dos artigos; bases com um ou dois artigos produzem scores nulos ou negativos.
         """
         tokens = tokenizar(consulta)
         if not tokens:
