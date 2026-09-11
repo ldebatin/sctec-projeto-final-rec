@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.1 — 11/09/2026 (RF-43 e RF-44 revisados na issue #5) |
+| Versão do PRD | 1.2 — 11/09/2026 (RF-43/RF-44 revisados na #5; injeção de dependências revisada na #6) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -390,7 +390,7 @@ Um log completo de cada cenário demonstrado é copiado para `docs/evidencias/lo
 
 ## 11. Estratégia de testes
 
-Framework: pytest. LLM falso: classe `FakeLLM` com fila de respostas (objetos Pydantic ou exceções), injetada via fábrica `criar_grafo(llm=...)`.
+Framework: pytest. LLM falso: classe `FakeLLM` com fila de respostas (objetos Pydantic ou exceções), injetada por execução via `executar_triagem(entrada, cfg=..., llm=..., registro=...)`, que passa `ContextoExecucao(cfg, llm, registro)` como `context` do LangGraph (`Runtime[ContextoExecucao]` nos nodes e nas funções de roteamento). *Revisado em 11/09 (issue #6): o grafo é compilado uma vez e as dependências chegam por invocação, em vez de `criar_grafo(llm=...)`.*
 
 | # | Teste | Cobre | Rubrica |
 |---|---|---|---|
@@ -455,7 +455,8 @@ sctec-projeto-recuperacao/
 │   ├── retrieval.py         # carga da base e BM25
 │   ├── tools/catalogo.py    # consultar_catalogo_servicos
 │   ├── nodes.py             # funções dos nodes
-│   ├── grafo.py             # StateGraph, edges, roteamento, criar_grafo(llm=...)
+│   ├── contexto.py          # ContextoExecucao (cfg, llm, registro) injetado via Runtime
+│   ├── grafo.py             # StateGraph, edges, roteamento, criar_grafo(), executar_triagem(...)
 │   ├── observabilidade.py   # logger JSON, run_id, helpers de evento
 │   └── cli.py               # Typer: triar, exemplos, grafo
 ├── tests/

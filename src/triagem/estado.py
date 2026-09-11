@@ -32,6 +32,7 @@ class EstadoTriagem(TypedDict, total=False):
 
     # Decisões determinísticas
     rota: str | None
+    motivo_rota: str | None
     prioridade_final: Prioridade | None
 
     # Contexto recuperado

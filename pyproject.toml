@@ -47,6 +47,11 @@ ignore = ["N818"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011"]
+# Prompts são texto para o modelo; quebrar linhas mudaria o conteúdo enviado.
+"src/triagem/prompts.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["triagem", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

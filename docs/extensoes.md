@@ -20,7 +20,7 @@ Duas extensões distintas do item 4.9 da especificação, escolhidas em 11/09/20
 
 **Actions pinadas por hash de commit.** As duas actions de terceiros (`actions/checkout`, `astral-sh/setup-uv`) são referenciadas pelo hash completo do commit, com a versão em comentário. Isso evita que uma tag remanejada execute código diferente do revisado (vetor conhecido de ataque de supply chain) e resolve a causa da falha da execução #1: `astral-sh/setup-uv` deixou de publicar tags de major flutuantes a partir da v8 e recomenda o pin por hash no próprio README. O [`.github/dependabot.yml`](../.github/dependabot.yml) mantém os hashes atualizados com PRs semanais.
 
-**Por que os testes não precisam de chave.** Os nodes recebem o modelo por injeção (`criar_grafo(llm=...)`) e os testes usam o `FakeLLM` de `src/triagem/llm.py`. Só os testes marcados com `live` chamam o Gemini, e eles são excluídos no CI.
+**Por que os testes não precisam de chave.** Os nodes recebem o modelo por injeção (`executar_triagem(..., llm=...)`, via `Runtime[ContextoExecucao]` do LangGraph) e os testes usam o `FakeLLM` de `src/triagem/llm.py`. Só os testes marcados com `live` chamam o Gemini, e eles são excluídos no CI.
 
 **Como ver a evidência.**
 - Badge no topo do [README](../README.md) (visível para quem tem acesso ao repositório).
