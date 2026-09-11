@@ -130,4 +130,26 @@ Convenções:
 
 ---
 
-## Fase 2 — Grafo LangGraph e CLI (pendente)
+## Fase 2 — Grafo LangGraph e CLI (iniciada em 11/09/2026)
+
+### P-017 · Fluxo de trabalho por issue
+- **Origem:** usuário
+- **Objetivo:** rastreabilidade de processo: branch, PR, registro na issue e kanban.
+- **Prompt:**
+  > uma observação sempre criar uma branch para cada issue e ao fazer o push abrir um pr para a main, sempre regitre nas issues do project o que foi feito, sempre navegue a issue por todos as raias do kanban do projeto. guarde isso na memoria
+- **Resultado:** regra gravada na memória do assistente. Decidido em seguida (consulta ao aluno): o assistente faz o merge após lint e testes verdes, com merge commit; raia "Em revisão" adicionada ao kanban (Todo → In Progress → Em revisão → Done). Comentários retroativos nas issues #1 a #3.
+
+### P-018 · Exigir CI a cada push e PR
+- **Origem:** usuário
+- **Objetivo:** validação automática antes de qualquer merge.
+- **Prompt:**
+  > Outro ponto que notei agora, não está executando o CI com build e testes a cada push/pr
+- **Resultado:** issue #13 (extensão E1) antecipada da Fase 4 para a Fase 2, com etapa de build acrescentada ao escopo.
+
+### P-019 · Pipeline de CI (issue #13)
+- **Origem:** reconstruído (prompt sugerido na issue #13, ajustado ao que foi feito)
+- **Objetivo:** lint, formatação, testes e build a cada push na main e a cada PR.
+- **Prompt:**
+  > Crie .github/workflows/ci.yml disparado em push na main e pull_request para a main, com concurrency cancelando execuções antigas do mesmo ref e permissões mínimas. Use as versões mais recentes de actions/checkout e astral-sh/setup-uv (confira pela API de releases), matriz Python 3.10 e 3.12, uv sync --locked, ruff check, ruff format --check, pytest excluindo o marcador live e uv build. Adicione o badge ao README, documente a extensão E1 em docs/extensoes.md (o que roda, quando, por que os testes não precisam de chave, onde ver a evidência) e reserve docs/evidencias/ci/ para o registro da primeira execução verde.
+- **Resultado:** workflow com 7 etapas em 2 versões de Python; `actions/checkout@v7` e `astral-sh/setup-uv@v10` (últimas releases em 11/09/2026). Evidência da primeira execução registrada em `docs/evidencias/ci/` após o PR.
+
