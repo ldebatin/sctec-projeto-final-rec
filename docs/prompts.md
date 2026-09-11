@@ -208,3 +208,20 @@ Convenções:
 - **Prompt:**
   > Implemente src/triagem/cli.py com Typer: comando triar aceitando --arquivo JSON ou --titulo/--descricao/--servico/--ambiente/--solicitante, --formato json|texto, --salvar, --env e --sem-logs; JSON malformado e entrada inválida devem virar a saída de fallback do grafo com código 0, enquanto erro de configuração (chave ausente) e erro de uso saem com código 2; imprima em stderr o caminho do log JSONL. Comandos exemplos (lista data/exemplos/*.json com o campo _cenario) e grafo (Mermaid do LangGraph). Teste com CliRunner injetando o FakeLLM no lugar de criar_llm, cobrindo saída JSON com os campos mínimos da rubrica, formato texto, fallback com exit 0, código 2 sem chave e sem entrada, --salvar, logs em stderr, exemplos e grafo.
 - **Resultado:** 13 testes novos (109 no total). Entry point validado sem chave: mensagem "Erro de configuração: Variável GOOGLE_API_KEY não definida..." e código 2. `uv run triagem grafo` imprime o Mermaid gerado pelo LangGraph.
+
+---
+
+## Fase 3 — Contexto, tool e Gemini (iniciada em 11/09/2026)
+
+### P-028 · Seguir para a Fase 3
+- **Origem:** usuário
+- **Prompt:**
+  > pode seguir
+- **Resultado:** Fase 3 iniciada pela issue #8, no fluxo padrão.
+
+### P-029 · Base de conhecimento e recuperação BM25 (issue #8)
+- **Origem:** reconstruído (prompt sugerido na issue #8, ajustado ao que foi feito)
+- **Objetivo:** contexto obrigatório (RF-30, RF-31) usado de fato pelo fluxo.
+- **Prompt:**
+  > Escreva 10 artigos em data/base_conhecimento/*.md com front-matter YAML (id, titulo, categoria, tags, servicos) e seções Sintomas, Causa provável, Procedimento e Escalonamento, cobrindo suporte, infraestrutura e software (senha do AD, VPN, portal com erro 500, ERP lento, disco cheio, e-mail, impressora, certificado TLS, deploy em homologação, acesso negado a pasta). Implemente src/triagem/retrieval.py com tokenização sem acento e sem stopwords (normalizadas), índice BM25Okapi com título e tags pesando mais que o corpo, buscar(consulta, k, limiar) devolvendo ArtigoRecuperado com trecho da seção Procedimento, carga tolerante que ignora e reporta artigos inválidos ou com id duplicado, cache por pasta e erro tipado para base ausente. Ligue ao grafo: campo base em ContextoExecucao, node consultar_base real (consulta = título + descrição + palavras-chave; base indisponível vira erro no log + alerta sem_contexto_relevante sem interromper) e parâmetro base em executar_triagem. Testes: T8 (VPN em primeiro), ranking de 5 consultas, limiar, k, carga tolerante, integração no grafo e base injetada.
+- **Resultado:** 15 testes novos (126 no total). Dois ajustes durante os testes: stopwords normalizadas sem acento (senão "nao" sobrevivia à tokenização) e documentação de que o BM25 precisa de pelo menos dois artigos para scores positivos (IDF). Questão Q4 do PRD resolvida.

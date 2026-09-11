@@ -24,7 +24,13 @@ from triagem.modelos import (
     ResultadoTriagem,
 )
 from triagem.prompts import montar_mensagens_analise
-from triagem.regras import MOTIVO_FALHA_TRATADA, classificar_risco, motivos_revisao_humana
+from triagem.regras import (
+    MOTIVO_FALHA_TRATADA,
+    MOTIVO_SEM_CONTEXTO,
+    classificar_risco,
+    motivos_revisao_humana,
+)
+from triagem.retrieval import ErroBaseConhecimento, montar_consulta, obter_base
 
 # Nomes dos nodes (também usados nas edges e nos logs).
 VALIDAR_ENTRADA = "validar_entrada"
@@ -154,9 +160,33 @@ def classificar_risco_node(
 def consultar_base(
     state: EstadoTriagem, runtime: Runtime[ContextoExecucao], detalhes: dict[str, Any]
 ) -> dict[str, Any]:
-    """Recupera artigos da base de conhecimento (BM25). Implementação completa na issue #8."""
-    detalhes["implementado"] = False
-    return {"contexto": []}
+    """Recupera até 3 artigos da base de conhecimento por BM25 (RF-31).
+
+    Base ausente ou ilegível não interrompe o fluxo: registra erro, segue sem contexto
+    e sinaliza ``sem_contexto_relevante`` para a resposta ser genérica.
+    """
+    ctx = runtime.context
+    chamado, analise = state["chamado"], state["analise"]
+    assert chamado is not None and analise is not None
+    try:
+        base = ctx.base or obter_base(ctx.cfg.raiz_dados / "base_conhecimento")
+    except ErroBaseConhecimento as exc:
+        ctx.registro.erro(CONSULTAR_BASE, "ErroBaseConhecimento", str(exc))
+        detalhes["artigos"] = []
+        return {
+            "contexto": [],
+            "erros": [f"base_indisponivel: {exc}"],
+            "alertas": [MOTIVO_SEM_CONTEXTO],
+        }
+
+    consulta = montar_consulta(chamado.titulo, chamado.descricao, analise.palavras_chave)
+    artigos = base.buscar(consulta, k=3, limiar=ctx.cfg.limiar_bm25)
+    detalhes["artigos"] = [{"id": a.id, "score": a.score} for a in artigos]
+    detalhes["limiar"] = ctx.cfg.limiar_bm25
+    saida: dict[str, Any] = {"contexto": artigos}
+    if not artigos:
+        saida["alertas"] = [MOTIVO_SEM_CONTEXTO]
+    return saida
 
 
 @instrumentar(CONSULTAR_TOOL)
