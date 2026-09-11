@@ -151,5 +151,5 @@ Convenções:
 - **Objetivo:** lint, formatação, testes e build a cada push na main e a cada PR.
 - **Prompt:**
   > Crie .github/workflows/ci.yml disparado em push na main e pull_request para a main, com concurrency cancelando execuções antigas do mesmo ref e permissões mínimas. Use as versões mais recentes de actions/checkout e astral-sh/setup-uv (confira pela API de releases), matriz Python 3.10 e 3.12, uv sync --locked, ruff check, ruff format --check, pytest excluindo o marcador live e uv build. Adicione o badge ao README, documente a extensão E1 em docs/extensoes.md (o que roda, quando, por que os testes não precisam de chave, onde ver a evidência) e reserve docs/evidencias/ci/ para o registro da primeira execução verde.
-- **Resultado:** workflow com 7 etapas em 2 versões de Python; `actions/checkout@v7` e `astral-sh/setup-uv@v10` (últimas releases em 11/09/2026). Evidência da primeira execução registrada em `docs/evidencias/ci/` após o PR.
+- **Resultado:** workflow com 7 etapas em 2 versões de Python. A primeira execução falhou em "Set up job": `astral-sh/setup-uv` não publica tag de major flutuante (`v10` não existe, só `v10.1.0`). Correção: pinar versões exatas, `actions/checkout@v7.0.1` e `astral-sh/setup-uv@v10.1.0`, o que também torna o pipeline reproduzível. Evidência da primeira execução verde registrada em `docs/evidencias/ci/` no mesmo PR.
 
