@@ -19,13 +19,15 @@ from triagem.estado import EstadoTriagem
 from triagem.modelos import (
     Ambiente,
     AnaliseChamado,
+    ArtigoRecuperado,
     Categoria,
     Chamado,
     Prioridade,
+    RespostaLLM,
     ResultadoCatalogo,
     ResultadoTriagem,
 )
-from triagem.prompts import montar_mensagens_analise
+from triagem.prompts import montar_mensagens_analise, montar_mensagens_resposta
 from triagem.regras import (
     MOTIVO_FALHA_TRATADA,
     MOTIVO_SEM_CONTEXTO,
@@ -247,61 +249,129 @@ def consultar_tool(
     return {"tool_resultado": resultado}
 
 
-_ACAO_PADRAO = {
-    "simples": "Seguir o procedimento padrão da categoria e responder ao solicitante.",
-    "critico": (
-        "Escalar imediatamente para a equipe responsável pelo serviço "
-        "e acompanhar até a normalização."
-    ),
-}
+ALERTA_RESPOSTA_FALLBACK = "resposta_fallback"
+
+
+def _acao_fallback(
+    rota: str, contexto: list[ArtigoRecuperado], tool: ResultadoCatalogo | None
+) -> tuple[str, str]:
+    """Ação e justificativa montadas sem LLM, só com o contexto disponível (RF-32, RNF-03)."""
+    if rota == "critico":
+        if tool is not None and tool.ok:
+            acao = (
+                f"1. Acionar {tool.equipe_responsavel} ({tool.contato_escalonamento}). "
+                f"2. Status atual do serviço {tool.nome}: {tool.status_atual}. "
+                f"3. Seguir o runbook: {tool.runbook}"
+            )
+            return acao, f"Rota crítica; dados do catálogo do serviço {tool.servico_id}."
+        motivo = tool.mensagem if tool is not None and tool.mensagem else "serviço não identificado"
+        acao = (
+            "1. Encaminhar imediatamente para triagem manual da rota crítica. "
+            f"2. Confirmar o serviço afetado com o solicitante ({motivo}). "
+            "3. Acionar o plantão se houver indisponibilidade ampla."
+        )
+        return acao, "Rota crítica sem dados do catálogo; escalonamento manual."
+    if contexto:
+        artigo = contexto[0]
+        acao = f"1. Seguir o procedimento do artigo {artigo.id} ({artigo.titulo}): {artigo.trecho}"
+        if len(contexto) > 1:
+            acao += " 2. Artigos relacionados: " + ", ".join(a.id for a in contexto[1:]) + "."
+        return (
+            acao,
+            f"Artigo {artigo.id} recuperado da base de conhecimento (score {artigo.score}).",
+        )
+    return (
+        "1. Nenhum artigo relevante na base de conhecimento. "
+        "2. Encaminhar para triagem manual da categoria e responder ao solicitante.",
+        "Sem contexto relevante; resposta genérica.",
+    )
 
 
 @instrumentar(GERAR_RESPOSTA)
 def gerar_resposta(
     state: EstadoTriagem, runtime: Runtime[ContextoExecucao], detalhes: dict[str, Any]
 ) -> dict[str, Any]:
-    """Monta ``ResultadoTriagem``. Redação com LLM e uso do contexto chegam na issue #10.
+    """Redige resumo e ação com o LLM a partir do contexto recuperado (RF-32).
 
-    A montagem dos campos de controle é determinística: categoria e prioridade vêm das
-    regras; ``requer_revisao_humana`` vem de ``motivos_revisao_humana``.
+    Campos de controle são determinísticos: categoria e prioridade vêm das regras e
+    ``requer_revisao_humana`` de ``motivos_revisao_humana``. Se o LLM falhar, o texto é
+    montado sem modelo a partir do contexto (alerta ``resposta_fallback``).
     """
     ctx = runtime.context
-    analise = state["analise"]
-    assert analise is not None
+    chamado, analise = state["chamado"], state["analise"]
+    assert chamado is not None and analise is not None
     rota = state.get("rota") or "simples"
+    prioridade = state.get("prioridade_final") or analise.prioridade_sugerida
     contexto = state.get("contexto") or []
     tool = state.get("tool_resultado")
+    alertas_novos: list[str] = []
+    erros_novos: list[str] = []
+
+    inicio = time.perf_counter()
+    try:
+        resposta = ctx.llm.with_structured_output(RespostaLLM).invoke(
+            montar_mensagens_resposta(chamado, analise, rota, prioridade, contexto, tool)
+        )
+        if not isinstance(resposta, RespostaLLM):
+            resposta = RespostaLLM.model_validate(resposta)
+        ctx.registro.llm_chamada(
+            GERAR_RESPOSTA, ctx.cfg.nome_modelo, 1, (time.perf_counter() - inicio) * 1000, True
+        )
+        resumo, acao, justificativa = (
+            resposta.resumo,
+            resposta.acao_sugerida,
+            resposta.justificativa,
+        )
+        detalhes["fallback"] = False
+    except Exception as exc:  # o texto degrada; a estrutura da saída não
+        erro = f"{type(exc).__name__}: {exc}"
+        ctx.registro.llm_chamada(
+            GERAR_RESPOSTA,
+            ctx.cfg.nome_modelo,
+            1,
+            (time.perf_counter() - inicio) * 1000,
+            False,
+            erro=erro,
+        )
+        resumo = analise.resumo_tecnico
+        acao, justificativa = _acao_fallback(rota, contexto, tool)
+        alertas_novos.append(ALERTA_RESPOSTA_FALLBACK)
+        erros_novos.append(f"resposta_falhou: {erro}")
+        detalhes["fallback"] = True
 
     fontes = [artigo.id for artigo in contexto]
     if tool is not None and tool.ok and tool.servico_id:
         fontes.append(tool.servico_id)
 
+    alertas = [*state.get("alertas", []), *alertas_novos]
     motivos = motivos_revisao_humana(
         rota=rota,
         categoria=analise.categoria,
         confianca=analise.confianca,
         limiar_confianca=ctx.cfg.limiar_confianca,
         tool_ok=None if tool is None else tool.ok,
-        alertas=state.get("alertas", []),
+        alertas=alertas,
     )
     resultado = ResultadoTriagem(
         run_id=state["run_id"],
         categoria=analise.categoria,
-        prioridade=state.get("prioridade_final") or analise.prioridade_sugerida,
-        resumo=analise.resumo_tecnico,
-        acao_sugerida=_ACAO_PADRAO[rota],
+        prioridade=prioridade,
+        resumo=resumo,
+        acao_sugerida=acao,
+        justificativa=justificativa,
         requer_revisao_humana=bool(motivos),
         motivo_revisao=motivos,
         rota=rota,  # type: ignore[arg-type]
         fontes_contexto=fontes,
         tool_resultado=tool,
-        alertas=list(state.get("alertas", [])),
-        erros=list(state.get("erros", [])),
+        alertas=alertas,
+        erros=[*state.get("erros", []), *erros_novos],
         caminho_percorrido=[*state.get("caminho_percorrido", []), GERAR_RESPOSTA],
         modelo=ctx.cfg.nome_modelo,
     )
     detalhes["requer_revisao_humana"] = resultado.requer_revisao_humana
-    return {"resultado": resultado}
+    detalhes["fontes"] = fontes
+    return {"resultado": resultado, "alertas": alertas_novos, "erros": erros_novos}
 
 
 @instrumentar(TRATAR_FALHA)

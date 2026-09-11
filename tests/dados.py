@@ -1,6 +1,7 @@
 """Chamados e análises de exemplo compartilhados pelos testes."""
 
-from triagem.modelos import AnaliseChamado, Categoria, Impacto, Prioridade
+from triagem.llm import FakeLLM
+from triagem.modelos import AnaliseChamado, Categoria, Impacto, Prioridade, RespostaLLM
 
 CHAMADO_SENHA = {
     "titulo": "Esqueci minha senha do AD",
@@ -38,3 +39,14 @@ ANALISE_PORTAL = AnaliseChamado(
     resumo_tecnico="Portal de clientes retorna erro 500 para todos os usuários.",
     confianca=0.9,
 )
+
+RESPOSTA_PADRAO = RespostaLLM(
+    resumo="Resumo redigido pelo modelo a partir do contexto.",
+    acao_sugerida="1. Seguir o procedimento indicado no contexto. 2. Responder ao solicitante.",
+    justificativa="Baseado no artigo ou no catálogo fornecidos em <contexto>.",
+)
+
+
+def fake_llm(analise: AnaliseChamado, resposta: RespostaLLM = RESPOSTA_PADRAO) -> FakeLLM:
+    """FakeLLM com as duas respostas do caminho feliz: análise e redação final."""
+    return FakeLLM([analise, resposta])
