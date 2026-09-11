@@ -501,6 +501,7 @@ LLM_MODEL=gemini-2.5-flash        # confirmar modelo flash vigente no tier gratu
 GOOGLE_API_KEY=coloque-sua-chave-aqui
 LLM_TIMEOUT_SEGUNDOS=30
 MAX_TENTATIVAS_LLM=2
+LLM_BACKOFF_BASE_SEGUNDOS=2       # espera em erro de quota (429), dobra por tentativa
 LIMIAR_BM25=1.0
 LIMIAR_CONFIANCA=0.6
 LOG_NIVEL=INFO
