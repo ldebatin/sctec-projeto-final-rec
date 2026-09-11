@@ -153,3 +153,23 @@ Convenções:
   > Crie .github/workflows/ci.yml disparado em push na main e pull_request para a main, com concurrency cancelando execuções antigas do mesmo ref e permissões mínimas. Use as versões mais recentes de actions/checkout e astral-sh/setup-uv (confira pela API de releases), matriz Python 3.10 e 3.12, uv sync --locked, ruff check, ruff format --check, pytest excluindo o marcador live e uv build. Adicione o badge ao README, documente a extensão E1 em docs/extensoes.md (o que roda, quando, por que os testes não precisam de chave, onde ver a evidência) e reserve docs/evidencias/ci/ para o registro da primeira execução verde.
 - **Resultado:** workflow com 7 etapas em 2 versões de Python. A primeira execução falhou em "Set up job": `astral-sh/setup-uv` não publica tag de major flutuante (`v10` não existe, só `v10.1.0`). Correção: pinar versões exatas, `actions/checkout@v7.0.1` e `astral-sh/setup-uv@v10.1.0`, o que também torna o pipeline reproduzível. Evidência da primeira execução verde registrada em `docs/evidencias/ci/` no mesmo PR.
 
+### P-020 · Analisar a falha do CI
+- **Origem:** usuário
+- **Objetivo:** entender a causa da execução #1 antes de seguir.
+- **Prompt:**
+  > antes, analise pq o CI quebrou
+- **Resultado:** falha em *Set up job*, antes de qualquer etapa rodar: `astral-sh/setup-uv@v10` não resolve porque a action publica majors flutuantes só até `v7` (a partir da v8, apenas tags exatas) e o README oficial recomenda pin por hash. Erro de processo do assistente: inferiu a tag `v10` da release `v10.1.0` por analogia com `actions/checkout`, sem verificar a referência.
+
+### P-021 · Aprovar o endurecimento do CI
+- **Origem:** usuário
+- **Objetivo:** aplicar as prevenções propostas na análise.
+- **Prompt:**
+  > pode fazer
+- **Resultado:** issue #23 aberta e executada no fluxo padrão (branch, PR, CI, merge, comentário, raias).
+
+### P-022 · Pin por hash e Dependabot (issue #23)
+- **Origem:** reconstruído (prompt sugerido na issue #23)
+- **Objetivo:** proteger o pipeline contra remanejamento de tags e automatizar atualizações.
+- **Prompt:**
+  > Resolva via API do GitHub o hash de commit das tags actions/checkout@v7.0.1 e astral-sh/setup-uv@v10.1.0, dereferenciando tags anotadas se necessário, e troque os `uses:` do ci.yml para `owner/action@<sha40> # vX.Y.Z`. Crie .github/dependabot.yml para github-actions com verificação semanal, label `ci` e prefixo de commit `ci`. Atualize a seção E1 de docs/extensoes.md explicando o pin por hash e registre tudo em docs/prompts.md.
+- **Resultado:** `checkout@3d3c42e…` (v7.0.1) e `setup-uv@bec219d…` (v10.1.0); o hash da `setup-uv` coincide com o recomendado no README da action. Dependabot semanal às segundas, 9h de Brasília.
