@@ -41,7 +41,7 @@ Registro gerado a partir da API do GitHub Actions logo após a execução.
 
 ## Histórico
 
-- Execução anterior (`73d4c0e`) falhou em *Set up job*: `astral-sh/setup-uv@v10` não resolve, pois a action publica apenas tags de release. Corrigido pinando `setup-uv@v10.1.0` e `checkout@v7.0.1`.
+- Execução anterior [#1](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/runs/34638475229) (commit `e9030d4`) falhou em *Set up job*: `astral-sh/setup-uv@v10` não resolve, pois a action publica apenas tags de release. Corrigido pinando `setup-uv@v10.1.0` e `checkout@v7.0.1`.
 
 ## Como reproduzir
 
