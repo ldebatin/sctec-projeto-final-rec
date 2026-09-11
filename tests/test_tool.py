@@ -6,9 +6,8 @@ import pytest
 from pydantic import ValidationError
 
 from tests.conftest import RAIZ_DADOS
-from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA
+from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA, fake_llm
 from triagem.grafo import executar_triagem
-from triagem.llm import FakeLLM
 from triagem.modelos import Ambiente
 from triagem.regras import MOTIVO_ROTA_CRITICA, MOTIVO_TOOL_FALHOU
 from triagem.tools.catalogo import (
@@ -164,7 +163,7 @@ def test_tool_com_falha_simulada_levanta_erro_tipado():
 
 
 def _executar(cfg, registro, chamado, analise):
-    return executar_triagem(chamado, cfg=cfg, llm=FakeLLM([analise]), registro=registro)
+    return executar_triagem(chamado, cfg=cfg, llm=fake_llm(analise), registro=registro)
 
 
 def test_fluxo_critico_aciona_tool_com_sucesso(cfg, registro):

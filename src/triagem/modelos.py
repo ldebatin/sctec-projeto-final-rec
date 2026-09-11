@@ -252,6 +252,7 @@ class ResultadoTriagem(BaseModel):
     prioridade: Prioridade
     resumo: str
     acao_sugerida: str
+    justificativa: str | None = None
     requer_revisao_humana: bool
     motivo_revisao: list[str] = Field(default_factory=list)
     rota: Rota

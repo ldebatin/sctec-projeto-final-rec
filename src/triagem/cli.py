@@ -98,6 +98,8 @@ def _formatar_texto(resultado: ResultadoTriagem) -> str:
         f"Resumo: {resultado.resumo}",
         f"Ação sugerida: {resultado.acao_sugerida}",
     ]
+    if resultado.justificativa:
+        linhas.append(f"Justificativa: {resultado.justificativa}")
     if resultado.fontes_contexto:
         linhas.append("Fontes de contexto: " + ", ".join(resultado.fontes_contexto))
     if resultado.tool_resultado is not None:

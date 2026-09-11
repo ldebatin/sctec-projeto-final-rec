@@ -1,6 +1,13 @@
 """Testes do grafo LangGraph (issue #6): T3, T6 e comportamento estrutural."""
 
-from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA
+from tests.dados import (
+    ANALISE_PORTAL,
+    ANALISE_SENHA,
+    CHAMADO_PORTAL,
+    CHAMADO_SENHA,
+    RESPOSTA_PADRAO,
+    fake_llm,
+)
 from triagem.grafo import ORDEM_NODES, criar_grafo, diagrama_mermaid, executar_triagem
 from triagem.llm import FakeLLM
 from triagem.observabilidade import resumir_eventos
@@ -61,10 +68,10 @@ def test_retry_respeita_limite_e_termina_em_tratar_falha(cfg, registro):
 
 
 def test_retry_recupera_na_segunda_tentativa(cfg, registro):
-    fake = FakeLLM([RuntimeError("429 quota"), ANALISE_SENHA])
+    fake = FakeLLM([RuntimeError("429 quota"), ANALISE_SENHA, RESPOSTA_PADRAO])
     resultado = executar_triagem(CHAMADO_SENHA, cfg=cfg, llm=fake, registro=registro)
 
-    assert fake.total_chamadas == 2
+    assert fake.total_chamadas == 3  # 2 análises + 1 resposta
     assert resultado.rota == "simples"
     assert resultado.caminho_percorrido[:3] == [
         "validar_entrada",
@@ -80,7 +87,7 @@ def test_retry_recupera_na_segunda_tentativa(cfg, registro):
 
 def test_fluxo_simples_percorre_consultar_base(cfg, registro):
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro
+        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro
     )
 
     assert resultado.rota == "simples"
@@ -101,7 +108,7 @@ def test_fluxo_simples_percorre_consultar_base(cfg, registro):
 
 def test_fluxo_critico_percorre_consultar_tool_e_exige_revisao(cfg, registro):
     resultado = executar_triagem(
-        CHAMADO_PORTAL, cfg=cfg, llm=FakeLLM([ANALISE_PORTAL]), registro=registro
+        CHAMADO_PORTAL, cfg=cfg, llm=fake_llm(ANALISE_PORTAL), registro=registro
     )
 
     assert resultado.rota == "critico"
@@ -119,12 +126,12 @@ def test_fluxo_critico_percorre_consultar_tool_e_exige_revisao(cfg, registro):
 
 def test_logs_reconstroem_o_caminho_percorrido(cfg, registro):
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro
+        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro
     )
     eventos = registro.ler_eventos()
     resumo = resumir_eventos(eventos)
     assert resumo["nodes"] == resultado.caminho_percorrido
-    assert resumo["chamadas_llm"] == 1
+    assert resumo["chamadas_llm"] == 2  # análise + resposta
     assert len(resumo["roteamentos"]) == 3
     assert eventos[0]["evento"] == "execucao_iniciada"
     assert eventos[-1]["evento"] == "execucao_finalizada"
@@ -137,7 +144,7 @@ def test_logs_reconstroem_o_caminho_percorrido(cfg, registro):
 def test_recursion_limit_e_rede_de_seguranca(cfg, registro):
     """Com limite artificialmente baixo, o GraphRecursionError vira fallback controlado."""
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro, limite_recursao=2
+        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro, limite_recursao=2
     )
     assert resultado.rota == "falha"
     assert any("GraphRecursionError" in erro for erro in resultado.erros)

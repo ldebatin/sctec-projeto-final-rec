@@ -6,10 +6,9 @@ import pytest
 from typer.testing import CliRunner
 
 from tests.conftest import RAIZ_DADOS
-from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA
+from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA, fake_llm
 from triagem import cli
 from triagem.config import ErroConfiguracao
-from triagem.llm import FakeLLM
 from triagem.modelos import CAMPOS_MINIMOS_SAIDA
 
 runner = CliRunner()
@@ -27,7 +26,7 @@ def ambiente_cli(tmp_path, monkeypatch):
 
 @pytest.fixture
 def llm_falso(monkeypatch):
-    fake = FakeLLM([ANALISE_SENHA])
+    fake = fake_llm(ANALISE_SENHA)
     monkeypatch.setattr(cli, "criar_llm", lambda cfg: fake)
     return fake
 
@@ -55,11 +54,11 @@ def test_triar_arquivo_json_imprime_resultado_estruturado(ambiente_cli, llm_fals
     assert saida["rota"] == "simples"
     assert saida["categoria"] == "suporte"
     assert saida["caminho_percorrido"][0] == "validar_entrada"
-    assert llm_falso.total_chamadas == 1
+    assert llm_falso.total_chamadas == 2  # análise + resposta
 
 
 def test_triar_argumentos_formato_texto(ambiente_cli, monkeypatch):
-    monkeypatch.setattr(cli, "criar_llm", lambda cfg: FakeLLM([ANALISE_PORTAL]))
+    monkeypatch.setattr(cli, "criar_llm", lambda cfg: fake_llm(ANALISE_PORTAL))
     resultado = runner.invoke(
         cli.app,
         [

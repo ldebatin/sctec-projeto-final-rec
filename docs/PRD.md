@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.2 — 11/09/2026 (RF-43/RF-44 revisados na #5; injeção de dependências revisada na #6) |
+| Versão do PRD | 1.3 — 11/09/2026 (RF-43/RF-44 na #5; injeção de dependências na #6; `justificativa` na saída na #10) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -103,7 +103,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 |---|---|---|---|
 | RF-30 | Manter base de conhecimento em `data/base_conhecimento/*.md` com front-matter (`id`, `titulo`, `categoria`, `tags`, `servicos`) e corpo com sintomas, causa provável, procedimento e escalonamento. Mínimo de 8 artigos cobrindo as três categorias. *Entregue na issue #8 com 10 artigos.* | P0 | 7 |
 | RF-31 | Node `consultar_base` recupera top-3 artigos por BM25 usando título + descrição + palavras-chave da análise, com limiar mínimo de score; abaixo do limiar, registra "sem artigos relevantes". | P0 | 7 |
-| RF-32 | Node `gerar_resposta` usa **de fato** o contexto recuperado (artigos ou dados do catálogo) para compor `resumo` e `acao_sugerida`, citando os `id`s em `fontes_contexto`. | P0 | 7 |
+| RF-32 | Node `gerar_resposta` usa **de fato** o contexto recuperado (artigos ou dados do catálogo) para compor `resumo` e `acao_sugerida`, citando os `id`s em `fontes_contexto`. *Entregue na issue #10: o contexto vai ao modelo no bloco `<contexto>`; se o modelo falhar, ação e justificativa são montadas sem LLM a partir do contexto (alerta `resposta_fallback`).* | P0 | 7 |
 | RF-33 | State carrega a análise do LLM, a rota, o contexto e os erros entre nodes (memória de curto prazo da execução). | P0 | 7 |
 
 ### 3.5 Classificação e regras
@@ -216,6 +216,7 @@ class ResultadoTriagem(BaseModel):
     prioridade: Prioridade
     resumo: str
     acao_sugerida: str
+    justificativa: str | None         # por que essa ação (adicionado na issue #10)
     requer_revisao_humana: bool
     motivo_revisao: list[str]         # ex.: ["rota_critica", "confianca_baixa"]
     rota: Literal["simples", "critico", "falha"]

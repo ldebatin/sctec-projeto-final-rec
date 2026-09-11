@@ -3,9 +3,8 @@
 import pytest
 
 from tests.conftest import RAIZ_DADOS
-from tests.dados import ANALISE_SENHA, CHAMADO_SENHA
+from tests.dados import ANALISE_SENHA, CHAMADO_SENHA, fake_llm
 from triagem.grafo import executar_triagem
-from triagem.llm import FakeLLM
 from triagem.modelos import Categoria
 from triagem.regras import MOTIVO_SEM_CONTEXTO
 from triagem.retrieval import BaseConhecimento, ErroBaseConhecimento, obter_base, tokenizar
@@ -119,7 +118,7 @@ def test_limiar_filtra_consulta_irrelevante(base):
 
 def test_node_consultar_base_preenche_contexto_e_fontes(cfg, registro):
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro
+        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro
     )
     assert resultado.rota == "simples"
     assert "kb-001-reset-senha-ad" in resultado.fontes_contexto
@@ -137,7 +136,7 @@ def test_node_consultar_base_preenche_contexto_e_fontes(cfg, registro):
 def test_base_indisponivel_nao_interrompe_o_fluxo(cfg, registro, tmp_path):
     cfg_sem_base = cfg.__class__(**{**cfg.__dict__, "raiz_dados": tmp_path / "vazio"})
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg_sem_base, llm=FakeLLM([ANALISE_SENHA]), registro=registro
+        CHAMADO_SENHA, cfg=cfg_sem_base, llm=fake_llm(ANALISE_SENHA), registro=registro
     )
     assert resultado.rota == "simples"
     assert resultado.fontes_contexto == []
@@ -167,6 +166,6 @@ def test_base_injetada_tem_precedencia(cfg, registro, tmp_path):
         )
     base_teste = BaseConhecimento.carregar(tmp_path)
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=FakeLLM([ANALISE_SENHA]), registro=registro, base=base_teste
+        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro, base=base_teste
     )
     assert resultado.fontes_contexto == ["kb-teste"]
