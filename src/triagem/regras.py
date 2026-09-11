@@ -8,6 +8,7 @@ roteamento, para que a decisão seja explicável.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Literal
@@ -209,3 +210,69 @@ def motivos_revisao_humana(
     if MOTIVO_INJECAO in set(alertas):
         motivos.append(MOTIVO_INJECAO)
     return motivos
+
+
+# ---------------------------------------------------------------------------
+# Entrada não confiável: prompt injection (RF-60, RF-61; extensão E2)
+# ---------------------------------------------------------------------------
+
+# Padrões comparados sobre o texto normalizado (minúsculas, sem acento). Cada entrada é
+# (rótulo, regex). Os rótulos aparecem no log `alerta_seguranca` e nos testes.
+PADROES_INJECAO: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
+    (rotulo, re.compile(regex))
+    for rotulo, regex in (
+        (
+            "ignorar_instrucoes",
+            r"\b(ignore|ignorar|desconsidere|esqueca)\b.{0,40}\binstru(coes|cao)\b",
+        ),
+        (
+            "ignore_previous_instructions",
+            r"\bignore\b.{0,30}\b(previous|prior|above|all)\b.{0,20}\binstructions?\b",
+        ),
+        (
+            "system_prompt",
+            r"\b(system prompt|prompt do sistema|suas instrucoes|your instructions)\b",
+        ),
+        (
+            "mudanca_de_papel",
+            r"\b(voce agora e|a partir de agora voce|you are now|act as|aja como|finja ser)\b",
+        ),
+        (
+            "exfiltracao_de_segredo",
+            r"\b(revele|mostre|exiba|imprima|inclua|liste|print|reveal|show)\b.{0,60}"
+            r"\b(chave|senha|token|api[_ ]?key|variavel|segredo|credencia(l|is)|secret)\b",
+        ),
+        (
+            "instrucao_ao_triador",
+            r"\b(para o sistema de triagem|ao sistema de triagem|para o modelo|para a ia"
+            r"|para o agente)\b",
+        ),
+        ("forcar_classificacao", r"\bclassifique\b.{0,40}\bcomo\b"),
+        ("forcar_formato", r"\bresponda (apenas|somente|so) com\b"),
+        ("sem_revisao", r"\bsem revisao humana\b"),
+        ("jailbreak", r"\b(jailbreak|developer mode|modo desenvolvedor|dan mode)\b"),
+    )
+)
+
+ALERTA_INJECAO = MOTIVO_INJECAO  # mesmo rótulo em `alertas` e em `motivo_revisao`
+ALERTA_SEGREDO_REDIGIDO = "segredo_redigido"
+
+
+def detectar_injecao(texto: str) -> list[str]:
+    """Rótulos dos padrões de instrução injetada encontrados no texto (RF-60).
+
+    Detector determinístico e conservador: serve para sinalizar e forçar revisão humana,
+    não para bloquear o chamado. O conteúdo continua sendo triado como dado.
+    """
+    normalizado = normalizar_texto(texto)
+    return [rotulo for rotulo, padrao in PADROES_INJECAO if padrao.search(normalizado)]
+
+
+def redigir_segredos(texto: str, segredos: Iterable[str | None]) -> tuple[str, bool]:
+    """Substitui ocorrências literais de segredos (ex.: a chave de API) por ``[REDIGIDO]``."""
+    redigido = False
+    for segredo in segredos:
+        if segredo and len(segredo) >= 8 and segredo in texto:
+            texto = texto.replace(segredo, "[REDIGIDO]")
+            redigido = True
+    return texto, redigido
