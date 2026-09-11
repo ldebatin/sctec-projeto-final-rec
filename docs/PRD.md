@@ -101,7 +101,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 
 | ID | Requisito | Prioridade | Rubrica |
 |---|---|---|---|
-| RF-30 | Manter base de conhecimento em `data/base_conhecimento/*.md` com front-matter (`id`, `titulo`, `categoria`, `tags`, `servicos`) e corpo com sintomas, causa provável e procedimento. Mínimo de 8 artigos cobrindo as três categorias. | P0 | 7 |
+| RF-30 | Manter base de conhecimento em `data/base_conhecimento/*.md` com front-matter (`id`, `titulo`, `categoria`, `tags`, `servicos`) e corpo com sintomas, causa provável, procedimento e escalonamento. Mínimo de 8 artigos cobrindo as três categorias. *Entregue na issue #8 com 10 artigos.* | P0 | 7 |
 | RF-31 | Node `consultar_base` recupera top-3 artigos por BM25 usando título + descrição + palavras-chave da análise, com limiar mínimo de score; abaixo do limiar, registra "sem artigos relevantes". | P0 | 7 |
 | RF-32 | Node `gerar_resposta` usa **de fato** o contexto recuperado (artigos ou dados do catálogo) para compor `resumo` e `acao_sugerida`, citando os `id`s em `fontes_contexto`. | P0 | 7 |
 | RF-33 | State carrega a análise do LLM, a rota, o contexto e os erros entre nodes (memória de curto prazo da execução). | P0 | 7 |
@@ -620,6 +620,6 @@ SIMULAR_FALHA_TOOL=0
 | Q1 | Modelo flash exato do Gemini disponível no tier gratuito no momento da implementação | `.env.example`, README | 13/09, ao integrar |
 | Q2 | Versões atuais de `langgraph` e `langchain-google-genai` e sintaxe vigente de `with_structured_output` / `init_chat_model` | `llm.py`, `grafo.py` | 12/09, no scaffold |
 | Q3 | Se o Python 3.10 local atende às dependências ou se instalamos 3.12 via uv | `pyproject` | 11/09, no scaffold |
-| Q4 | Nível de detalhe dos artigos da base (8 curtos vs. 10 médios) | tempo de escrita, qualidade das respostas | 13/09 |
+| Q4 | ~~Nível de detalhe dos artigos da base~~ Resolvida em 11/09 (issue #8): 10 artigos médios, com seções Sintomas, Causa provável, Procedimento e Escalonamento | — | — |
 
 Nenhuma questão aberta bloqueia o início da implementação.

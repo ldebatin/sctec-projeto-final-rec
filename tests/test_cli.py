@@ -5,6 +5,7 @@ import json
 import pytest
 from typer.testing import CliRunner
 
+from tests.conftest import RAIZ_DADOS
 from tests.dados import ANALISE_PORTAL, ANALISE_SENHA, CHAMADO_PORTAL, CHAMADO_SENHA
 from triagem import cli
 from triagem.config import ErroConfiguracao
@@ -18,6 +19,7 @@ runner = CliRunner()
 def ambiente_cli(tmp_path, monkeypatch):
     """Logs em pasta temporária, sem .env real e com chave falsa."""
     monkeypatch.setenv("RAIZ_LOGS", str(tmp_path / "logs"))
+    monkeypatch.setenv("RAIZ_DADOS", str(RAIZ_DADOS))
     monkeypatch.setenv("GOOGLE_API_KEY", "chave-teste")
     monkeypatch.chdir(tmp_path)
     return tmp_path

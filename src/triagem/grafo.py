@@ -44,6 +44,7 @@ from triagem.nodes import (
 )
 from triagem.observabilidade import RegistroExecucao, criar_registro
 from triagem.regras import MOTIVO_FALHA_TRATADA
+from triagem.retrieval import BaseConhecimento
 
 # Caminho mais longo possível: validar + MAX tentativas + classificar + consulta + resposta.
 # 10 cobre MAX_TENTATIVAS_LLM até 6 com folga.
@@ -196,6 +197,7 @@ def executar_triagem(
     cfg: Configuracao,
     llm: ModeloLinguagem,
     registro: RegistroExecucao | None = None,
+    base: BaseConhecimento | None = None,
     origem: str = "api",
     limite_recursao: int = LIMITE_RECURSAO,
 ) -> ResultadoTriagem:
@@ -207,7 +209,7 @@ def executar_triagem(
     registro = registro or criar_registro(cfg)
     titulo = entrada_bruta.get("titulo", "") if isinstance(entrada_bruta, dict) else ""
     registro.execucao_iniciada(str(titulo), origem)
-    contexto = ContextoExecucao(cfg=cfg, llm=llm, registro=registro)
+    contexto = ContextoExecucao(cfg=cfg, llm=llm, registro=registro, base=base)
 
     try:
         final = obter_grafo().invoke(
