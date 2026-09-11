@@ -1,0 +1,8 @@
+{
+  "_cenario": "Rota crítica: software em produção, todos os usuários, tool de catálogo acionada",
+  "titulo": "Portal de Clientes fora do ar",
+  "descricao": "O Portal de Clientes está retornando erro 500 em todas as páginas desde as 9h. Nenhum cliente consegue fazer login nem consultar faturas. O time de atendimento já recebeu mais de 40 reclamações e a página de status ainda mostra tudo operacional.",
+  "servico": "Portal de Clientes",
+  "ambiente": "producao",
+  "solicitante": "Carlos Lima (Atendimento)"
+}
