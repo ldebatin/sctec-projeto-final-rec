@@ -1,0 +1,6 @@
+{
+  "_cenario": "Cenário de falha: entrada inválida (descrição vazia) tratada sem interromper a aplicação",
+  "titulo": "Sistema com erro",
+  "descricao": "   ",
+  "ambiente": "producao"
+}

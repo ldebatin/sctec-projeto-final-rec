@@ -1,0 +1,8 @@
+{
+  "_cenario": "Rota crítica com falha da tool: serviço citado não existe no catálogo (servico_nao_encontrado)",
+  "titulo": "Sistema XPTO fora do ar para toda a equipe",
+  "descricao": "O Sistema XPTO, que usamos para controlar as ordens de serviço da manutenção, está fora do ar desde o início da tarde. Toda a equipe de campo (12 pessoas) está sem conseguir registrar atendimentos. Não sabemos qual área é responsável por ele.",
+  "servico": "Sistema XPTO",
+  "ambiente": "producao",
+  "solicitante": "Roberto Alves (Manutenção)"
+}

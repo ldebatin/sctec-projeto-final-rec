@@ -1,0 +1,6 @@
+{
+  "_cenario": "Rota simples: infraestrutura, um usuário remoto, ambiente não informado",
+  "titulo": "VPN cai a cada 20 minutos no home office",
+  "descricao": "Trabalho de casa e a VPN corporativa conecta normalmente, mas cai a cada 15 ou 20 minutos e preciso reconectar. No celular com 4G ela fica estável. Já reiniciei o notebook e o roteador. O cliente VPN é o padrão instalado pela TI.",
+  "solicitante": "Ana Pereira (Jurídico)"
+}

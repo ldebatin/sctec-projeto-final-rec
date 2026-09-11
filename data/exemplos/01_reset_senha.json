@@ -1,0 +1,8 @@
+{
+  "_cenario": "Fluxo principal, rota simples: suporte, um usuário, consulta à base de conhecimento",
+  "titulo": "Esqueci minha senha e a conta bloqueou",
+  "descricao": "Bom dia. Tentei entrar no computador hoje cedo e a senha não funcionou. Depois de algumas tentativas apareceu a mensagem de conta bloqueada. Não consigo acessar o e-mail nem a intranet. Preciso resetar a senha do Active Directory.",
+  "servico": "Active Directory",
+  "ambiente": "producao",
+  "solicitante": "Maria Souza (Financeiro)"
+}
