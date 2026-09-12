@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import sys
 import time
 import uuid
@@ -45,6 +46,34 @@ Evento = Literal[
 def gerar_run_id() -> str:
     """Identificador único da execução (uuid4 em hexadecimal)."""
     return uuid.uuid4().hex
+
+
+# ---------------------------------------------------------------------------
+# Dados pessoais nos logs (RF-70)
+# ---------------------------------------------------------------------------
+
+_EMAIL = re.compile(r"\b([A-Za-z0-9._%+-])[A-Za-z0-9._%+-]*@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b")
+# CPF formatado (000.000.000-00) ou apenas dígitos, isolado por não-dígitos.
+_CPF = re.compile(r"(?<!\d)(\d{3})[.\s]?(\d{3})[.\s]?(\d{3})[-.\s]?(\d{2})(?!\d)")
+
+
+def mascarar_pii(texto: str) -> str:
+    """Mascara e-mails (``m***@dominio``) e CPFs (``***.***.***-12``) em texto livre.
+
+    Aplicado só aos logs: a saída da triagem (``ResultadoTriagem``) não é alterada.
+    """
+    texto = _EMAIL.sub(lambda m: f"{m.group(1)}***@{m.group(2)}", texto)
+    return _CPF.sub(lambda m: f"***.***.***-{m.group(4)}", texto)
+
+
+def _mascarar_recursivo(valor: Any) -> Any:
+    if isinstance(valor, str):
+        return mascarar_pii(valor)
+    if isinstance(valor, dict):
+        return {chave: _mascarar_recursivo(item) for chave, item in valor.items()}
+    if isinstance(valor, (list, tuple)):
+        return [_mascarar_recursivo(item) for item in valor]
+    return valor
 
 
 def _agora_iso() -> str:
@@ -120,7 +149,11 @@ class RegistroExecucao:
             nivel,
             nome,
             exc_info=exc_info,
-            extra={"run_id": self.run_id, "evento": nome, "detalhes": detalhes},
+            extra={
+                "run_id": self.run_id,
+                "evento": nome,
+                "detalhes": _mascarar_recursivo(detalhes),
+            },
         )
 
     # ----- helpers dos eventos padronizados ---------------------------------
