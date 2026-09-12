@@ -138,7 +138,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 
 | ID | Requisito | Prioridade |
 |---|---|---|
-| RF-70 | Mascarar e-mails e CPFs nos logs (regex simples) para não vazar dados pessoais em evidências. | P2 |
+| RF-70 | Mascarar e-mails e CPFs nos logs (regex simples) para não vazar dados pessoais em evidências. *Entregue na issue #15: aplicado a todos os detalhes de evento, inclusive aninhados; a saída da triagem não é alterada.* | P2 |
 | RF-71 | Comando `triagem exemplos` que lista os chamados de exemplo com uma linha de descrição. | P2 |
 | RF-72 | Comando `triagem grafo` que imprime o diagrama Mermaid do grafo gerado pelo LangGraph (`get_graph().draw_mermaid()`) para colar no README. | P2 |
 

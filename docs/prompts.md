@@ -264,3 +264,10 @@ Convenções:
 - **Prompt:**
   > Em regras.py, implemente detectar_injecao(texto) com padrões rotulados (pt-BR e inglês) sobre o texto normalizado: ignorar instruções, system prompt, mudança de papel, exfiltração de segredo, instrução dirigida ao triador, forçar classificação ou formato, "sem revisão humana", jailbreak; e redigir_segredos(texto, segredos). Em validar_entrada, se houver padrões, registre alerta_seguranca com os rótulos e adicione o alerta possivel_prompt_injection sem bloquear o chamado. Anexe um aviso extra ao system prompt das duas chamadas quando houver suspeita. Em gerar_resposta, substitua qualquer ocorrência literal da chave de API por [REDIGIDO] com alerta segredo_redigido. Testes: 12 positivos e 5 chamados legítimos sem disparo, T7 com o exemplo 06 e uma análise manipulada para baixa (alerta, revisão humana, rota crítica e prioridade alta mantidas, aviso nos prompts, alerta antes do LLM no log), redação da chave vazada pelo modelo e prompts com delimitadores. Documente a E2 em docs/extensoes.md com ameaça, controles em camadas, evidências e limitação.
 - **Resultado:** 24 testes novos (220 no total). A evidência com o Gemini real do exemplo 06 fica pendente da chave (issue #11).
+
+### P-035 · Mascarar dados pessoais nos logs (issue #15, P2)
+- **Origem:** reconstruído (prompt sugerido na issue #15)
+- **Objetivo:** publicar logs como evidência sem expor e-mail ou CPF.
+- **Prompt:**
+  > Em observabilidade.py, crie mascarar_pii(texto) para e-mails (manter a primeira letra e o domínio) e CPFs formatados ou só dígitos (manter os dois últimos), e aplique recursivamente a todos os detalhes de evento (strings, dicts e listas) antes de gravar o log. Não altere a saída ResultadoTriagem. Teste com casos positivos, negativos (ramal, número de pedido), campos aninhados e um fluxo completo mostrando o e-mail íntegro na saída e mascarado no arquivo de log.
+- **Resultado:** 8 testes novos (228 no total).
