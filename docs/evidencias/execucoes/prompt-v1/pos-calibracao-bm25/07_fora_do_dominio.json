@@ -1,0 +1,27 @@
+{
+  "run_id": "4196cebedfeb4a76970f7a3bd8a2078c",
+  "categoria": "indefinido",
+  "prioridade": "baixa",
+  "resumo": "O usuário busca orientação sobre o processo formal para solicitar e registrar suas férias, que já foram aprovadas verbalmente pelo gestor.",
+  "acao_sugerida": "1. Informar ao usuário que não foi encontrado um procedimento padrão na base de conhecimento. 2. Orientar o usuário a entrar em contato com o departamento de Recursos Humanos para obter as informações sobre o processo de formalização de férias.",
+  "justificativa": "O contexto não forneceu informações relevantes para a solicitação do usuário, indicando a necessidade de triagem manual.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "categoria_indefinida"
+  ],
+  "rota": "simples",
+  "fontes_contexto": [],
+  "tool_resultado": null,
+  "alertas": [
+    "sem_contexto_relevante"
+  ],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_base",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

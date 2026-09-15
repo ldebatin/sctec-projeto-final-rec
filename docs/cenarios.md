@@ -12,7 +12,9 @@ Todos os chamados de exemplo ficam em [`data/exemplos/`](../data/exemplos/) e s�
 | `06_prompt_injection.json` | **Extensão E2**: instrução injetada tenta rebaixar a prioridade e exfiltrar configuração; regras e detector (issue #14) neutralizam | `critico` | sim (`rota_critica`, `possivel_prompt_injection`) |
 | `07_fora_do_dominio.json` | Pedido não técnico: `categoria = indefinido`, confiança baixa | `simples` | sim (`categoria_indefinida`) |
 
-A rota efetiva depende da análise do modelo e das regras determinísticas de `regras.py`; a coluna "esperada" é o comportamento observado com o Gemini nos testes de referência (issue #11) e o garantido pelos testes automatizados com o `FakeLLM`.
+A rota efetiva depende da análise do modelo e das regras determinísticas de `regras.py`; a coluna "esperada" é o comportamento-alvo, garantido pelos testes automatizados com o `FakeLLM`.
+
+> **Execução real (15/09/2026, prompts v1):** os cenários 02 a 07 se comportaram como esperado. O **01** caiu em rota `critico`: o Gemini sugeriu `media` (um usuário sem contorno, como o prompt manda) e a regra RF-44(a) elevou para `alta` por ser produção. Saídas, logs e a análise estão em [`evidencias/execucoes/prompt-v1/`](evidencias/execucoes/prompt-v1/README.md); a correção é tratada nas issues #16 (prompt) e #17 (regras).
 
 ## Como executar
 

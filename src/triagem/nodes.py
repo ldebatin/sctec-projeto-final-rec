@@ -175,6 +175,10 @@ def analisar_chamado(
     detalhes["categoria"] = analise.categoria.value
     detalhes["prioridade_sugerida"] = analise.prioridade_sugerida.value
     detalhes["confianca"] = analise.confianca
+    # Campos usados na calibração dos limiares e no refinamento do prompt (issues #11 e #16).
+    detalhes["impacto"] = analise.impacto.value
+    detalhes["servico_mencionado"] = analise.servico_mencionado
+    detalhes["palavras_chave"] = analise.palavras_chave
     return {"analise": analise, "tentativas_llm": tentativa}
 
 

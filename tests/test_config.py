@@ -14,7 +14,7 @@ def test_padroes_sem_variaveis():
     assert cfg.nome_modelo == "google_genai:gemini-2.5-flash"
     assert cfg.max_tentativas_llm == 2
     assert cfg.llm_timeout_segundos == 30.0
-    assert cfg.limiar_bm25 == 1.0
+    assert cfg.limiar_bm25 == 12.0
     assert cfg.limiar_confianca == 0.6
     assert cfg.log_formato == "json"
     assert cfg.simular_falha_tool is False

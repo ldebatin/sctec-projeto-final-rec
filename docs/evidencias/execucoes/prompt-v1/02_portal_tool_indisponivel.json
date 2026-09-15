@@ -1,0 +1,39 @@
+{
+  "run_id": "069a1df4429e45ff81d934f8b2bc86d3",
+  "categoria": "software",
+  "prioridade": "critica",
+  "resumo": "O Portal de Clientes está inacessível, retornando erro 500 em todas as páginas desde as 9h, o que impede os clientes de fazer login e consultar faturas, gerando um alto volume de reclamações.",
+  "acao_sugerida": "1. O contexto recuperado está vazio ou não se aplica ao problema. Realizar triagem manual para identificar a equipe responsável e os próximos passos.",
+  "justificativa": "O contexto recuperado não forneceu informações relevantes para sugerir uma ação específica, sendo necessária a triagem manual.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica",
+    "tool_falhou"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [],
+  "tool_resultado": {
+    "ok": false,
+    "erro": "catalogo_indisponivel",
+    "mensagem": "falha simulada do catálogo (SIMULAR_FALHA_TOOL=1)",
+    "servico_id": null,
+    "nome": null,
+    "equipe_responsavel": null,
+    "criticidade": null,
+    "status_atual": null,
+    "runbook": null,
+    "contato_escalonamento": null
+  },
+  "alertas": [],
+  "erros": [
+    "tool_catalogo_indisponivel: falha simulada do catálogo (SIMULAR_FALHA_TOOL=1)"
+  ],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}
