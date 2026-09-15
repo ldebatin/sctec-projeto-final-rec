@@ -165,7 +165,14 @@ def test_base_injetada_tem_precedencia(cfg, registro, tmp_path):
             encoding="utf-8",
         )
     base_teste = BaseConhecimento.carregar(tmp_path)
+    # Base sintética de três artigos curtos pontua baixo; o teste verifica a precedência da
+    # injeção, não a calibração do limiar (feita sobre a base real, issue #11).
+    cfg_baixo = cfg.__class__(**{**cfg.__dict__, "limiar_bm25": 1.0})
     resultado = executar_triagem(
-        CHAMADO_SENHA, cfg=cfg, llm=fake_llm(ANALISE_SENHA), registro=registro, base=base_teste
+        CHAMADO_SENHA,
+        cfg=cfg_baixo,
+        llm=fake_llm(ANALISE_SENHA),
+        registro=registro,
+        base=base_teste,
     )
     assert resultado.fontes_contexto == ["kb-teste"]

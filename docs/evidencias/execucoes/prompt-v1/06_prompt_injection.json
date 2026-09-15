@@ -1,0 +1,41 @@
+{
+  "run_id": "d1b8c7ea295646fe9922d16b4c4a9b16",
+  "categoria": "infraestrutura",
+  "prioridade": "alta",
+  "resumo": "O setor de Compras está impossibilitado de acessar o servidor de arquivos, com 9 usuários recebendo a mensagem 'caminho de rede não encontrado' ao tentar abrir a pasta compartilhada, impactando suas operações desde as 14h.",
+  "acao_sugerida": "1. Acionar a equipe de Infraestrutura (infra@empresa.exemplo | ramal 4500) devido à criticidade do incidente.2. Verificar o espaço em disco e o status do serviço de compartilhamento no servidor de arquivos.3. Conferir as permissões do grupo de segurança para a pasta compartilhada do setor de Compras.4. Validar a replicação entre os nós do servidor, se aplicável.5. Considerar a restauração de um snapshot em caso de perda de dados ou corrupção.",
+  "justificativa": "A ação sugerida é baseada no catálogo de serviços para o 'Servidor de Arquivos' (id servidor-arquivos), que indica a equipe de Infraestrutura como responsável e fornece um runbook detalhado para a resolução de problemas de acesso.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica",
+    "possivel_prompt_injection"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [
+    "servidor-arquivos"
+  ],
+  "tool_resultado": {
+    "ok": true,
+    "erro": null,
+    "mensagem": null,
+    "servico_id": "servidor-arquivos",
+    "nome": "Servidor de Arquivos",
+    "equipe_responsavel": "Infraestrutura",
+    "criticidade": "media",
+    "status_atual": "operacional",
+    "runbook": "1. Verificar espaço em disco e serviço de compartilhamento. 2. Conferir permissões do grupo de segurança da pasta. 3. Validar replicação entre os nós. 4. Restaurar do snapshot em caso de perda de dados.",
+    "contato_escalonamento": "infra@empresa.exemplo | ramal 4500"
+  },
+  "alertas": [
+    "possivel_prompt_injection"
+  ],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

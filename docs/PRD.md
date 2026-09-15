@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.3 — 11/09/2026 (RF-43/RF-44 na #5; injeção de dependências na #6; `justificativa` na saída na #10) |
+| Versão do PRD | 1.4 — 15/09/2026 (integração real com o Gemini e calibração de `LIMIAR_BM25` na #11; Q1 resolvida) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -102,7 +102,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | ID | Requisito | Prioridade | Rubrica |
 |---|---|---|---|
 | RF-30 | Manter base de conhecimento em `data/base_conhecimento/*.md` com front-matter (`id`, `titulo`, `categoria`, `tags`, `servicos`) e corpo com sintomas, causa provável, procedimento e escalonamento. Mínimo de 8 artigos cobrindo as três categorias. *Entregue na issue #8 com 10 artigos.* | P0 | 7 |
-| RF-31 | Node `consultar_base` recupera top-3 artigos por BM25 usando título + descrição + palavras-chave da análise, com limiar mínimo de score; abaixo do limiar, registra "sem artigos relevantes". | P0 | 7 |
+| RF-31 | Node `consultar_base` recupera top-3 artigos por BM25 usando título + descrição + palavras-chave da análise, com limiar mínimo de score; abaixo do limiar, registra "sem artigos relevantes". *Calibrado em 15/09 (issue #11) com execuções reais: `LIMIAR_BM25 = 12.0`; artigo correto pontua 35–46, ruído até 11, fora do domínio 4,8 (`docs/evidencias/execucoes/prompt-v1/`).* | P0 | 7 |
 | RF-32 | Node `gerar_resposta` usa **de fato** o contexto recuperado (artigos ou dados do catálogo) para compor `resumo` e `acao_sugerida`, citando os `id`s em `fontes_contexto`. *Entregue na issue #10: o contexto vai ao modelo no bloco `<contexto>`; se o modelo falhar, ação e justificativa são montadas sem LLM a partir do contexto (alerta `resposta_fallback`).* | P0 | 7 |
 | RF-33 | State carrega a análise do LLM, a rota, o contexto e os erros entre nodes (memória de curto prazo da execução). | P0 | 7 |
 
@@ -347,7 +347,7 @@ A escolha de **quando** chamar a tool é da regra de rota, não do modelo (D6).
 
 1. **State compartilhado** carrega `analise`, `rota`, `contexto` e `tool_resultado` até `gerar_resposta` (memória da execução).
 2. **Base de conhecimento** (`data/base_conhecimento/`): artigos Markdown com front-matter. Exemplos previstos: reset de senha AD; VPN não conecta; erro 500 no portal; lentidão no ERP; disco cheio em servidor; e-mail não sincroniza; impressora de rede offline; certificado TLS expirado; falha de deploy em homologação; acesso negado a pasta compartilhada.
-3. **Recuperação BM25**: tokenização simples (minúsculas, remoção de pontuação e stopwords pt-BR), índice construído em memória no início da execução, consulta = título + descrição + `palavras_chave`. Top-3 com `score >= LIMIAR_BM25` (padrão 1.0, calibrar).
+3. **Recuperação BM25**: tokenização simples (minúsculas, remoção de pontuação e stopwords pt-BR), índice construído em memória no início da execução, consulta = título + descrição + `palavras_chave`. Top-3 com `score >= LIMIAR_BM25` (padrão 12.0, calibrado em 15/09 na issue #11; ver `docs/evidencias/execucoes/prompt-v1/README.md`).
 4. **Uso efetivo**: o prompt de `gerar_resposta` recebe os artigos (id, título, procedimento) e exige que `acao_sugerida` se baseie neles quando existirem, citando os ids em `fontes_contexto`. Teste garante que os ids retornados aparecem no resultado.
 
 Na rota `critico`, o contexto vem do catálogo (runbook, equipe, status), também injetado no prompt de `gerar_resposta`.
@@ -404,7 +404,7 @@ Framework: pytest. LLM falso: classe `FakeLLM` com fila de respostas (objetos Py
 | T7 | `test_prompt_injection_detectada` — chamado adversarial → alerta, revisão humana, prioridade não rebaixada | extensão E2 | 13 |
 | T8 | `test_bm25_recupera_artigo_esperado` — consulta "vpn não conecta" retorna artigo de VPN em primeiro | contexto | 7 |
 | T9 | `test_regras_classificar_risco` (parametrizado) — combinações de prioridade/ambiente/impacto → rota esperada | regras determinísticas | 5 |
-| T10 | `test_live_gemini_smoke` (`@pytest.mark.live`, pulado sem chave) — execução real ponta a ponta | integração real | 4 |
+| T10 | `test_live_gemini_smoke` (`@pytest.mark.live`, pulado sem chave) — execução real ponta a ponta. *Verde em 15/09 com `gemini-2.5-flash` (2 testes em `tests/test_live.py`).* | integração real | 4 |
 
 Mínimo da rubrica: 3 testes (sucesso, falha, grafo/tool). Planejados: 9 offline + 1 live.
 
@@ -502,8 +502,8 @@ GOOGLE_API_KEY=coloque-sua-chave-aqui
 LLM_TIMEOUT_SEGUNDOS=30
 MAX_TENTATIVAS_LLM=2
 LLM_BACKOFF_BASE_SEGUNDOS=2       # espera em erro de quota (429), dobra por tentativa
-LIMIAR_BM25=1.0
-LIMIAR_CONFIANCA=0.6
+LIMIAR_BM25=12.0                  # calibrado em 15/09 com o Gemini (issue #11)
+LIMIAR_CONFIANCA=0.6              # recalibrar após o prompt v2 (issue #16): v1 satura em 1.0
 LOG_NIVEL=INFO
 LOG_FORMATO=json                  # json | texto
 SIMULAR_FALHA_TOOL=0
@@ -619,7 +619,7 @@ SIMULAR_FALHA_TOOL=0
 
 | # | Questão | Impacto | Prazo para decidir |
 |---|---|---|---|
-| Q1 | Modelo flash exato do Gemini disponível no tier gratuito no momento da implementação | `.env.example`, README | 13/09, ao integrar |
+| Q1 | ~~Modelo flash exato do Gemini disponível~~ Resolvida em 15/09 (issue #11): `gemini-2.5-flash` responde com saída estruturada válida em 14 de 14 chamadas; a conta usada tem faturamento ativo (`serviceTier: standard`) | — | — |
 | Q2 | Versões atuais de `langgraph` e `langchain-google-genai` e sintaxe vigente de `with_structured_output` / `init_chat_model` | `llm.py`, `grafo.py` | 12/09, no scaffold |
 | Q3 | Se o Python 3.10 local atende às dependências ou se instalamos 3.12 via uv | `pyproject` | 11/09, no scaffold |
 | Q4 | ~~Nível de detalhe dos artigos da base~~ Resolvida em 11/09 (issue #8): 10 artigos médios, com seções Sintomas, Causa provável, Procedimento e Escalonamento | — | — |

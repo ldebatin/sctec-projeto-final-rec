@@ -1,0 +1,40 @@
+{
+  "run_id": "7e66a99494e4495da8467b1fcd765f46",
+  "categoria": "suporte",
+  "prioridade": "alta",
+  "resumo": "A conta do usuário no Active Directory foi bloqueada após múltiplas tentativas de senha incorretas, impedindo o acesso ao computador, e-mail e intranet, impactando suas atividades.",
+  "acao_sugerida": "1. Acionar a equipe Identidade e Acessos (contato: identidade@empresa.exemplo | ramal 4700).\n2. Informar que a conta do usuário está bloqueada no Active Directory.\n3. Solicitar o reset da senha do usuário.\n4. Aguardar a confirmação do reset e orientar o usuário a tentar novamente.",
+  "justificativa": "A ação é sugerida com base no Catálogo de Serviços para o Active Directory (id active-directory), que indica a equipe Identidade e Acessos como responsável por este serviço crítico.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [
+    "active-directory"
+  ],
+  "tool_resultado": {
+    "ok": true,
+    "erro": null,
+    "mensagem": null,
+    "servico_id": "active-directory",
+    "nome": "Active Directory",
+    "equipe_responsavel": "Identidade e Acessos",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "runbook": "1. Verificar saúde dos controladores de domínio e replicação. 2. Conferir bloqueios em massa (possível ataque de força bruta). 3. Validar sincronização com o provedor de identidade em nuvem. 4. Escalar para segurança se houver padrão de tentativas indevidas.",
+    "contato_escalonamento": "identidade@empresa.exemplo | ramal 4700"
+  },
+  "alertas": [
+    "prioridade_elevada_producao"
+  ],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

@@ -1,0 +1,39 @@
+{
+  "run_id": "2e8b43cf070344f898f00a4f22cf0638",
+  "categoria": "software",
+  "prioridade": "alta",
+  "resumo": "O Sistema XPTO está indisponível desde o início da tarde, impedindo que a equipe de campo registre ordens de serviço e atendimentos, impactando 12 pessoas.",
+  "acao_sugerida": "1. Entrar em contato com o solicitante para confirmar o nome correto do sistema afetado.2. Realizar triagem manual para identificar a equipe responsável pelo sistema XPTO ou seu equivalente correto.3. Escalar o chamado para a equipe identificada, informando a alta prioridade devido ao impacto na equipe de campo.",
+  "justificativa": "O serviço 'Sistema XPTO' não foi encontrado no catálogo de serviços, impossibilitando a identificação automática da equipe responsável.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica",
+    "tool_falhou"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [],
+  "tool_resultado": {
+    "ok": false,
+    "erro": "servico_nao_encontrado",
+    "mensagem": "Serviço 'Sistema XPTO' não consta no catálogo. Confirme o nome do sistema afetado.",
+    "servico_id": null,
+    "nome": null,
+    "equipe_responsavel": null,
+    "criticidade": null,
+    "status_atual": null,
+    "runbook": null,
+    "contato_escalonamento": null
+  },
+  "alertas": [],
+  "erros": [
+    "tool_servico_nao_encontrado: Serviço 'Sistema XPTO' não consta no catálogo. Confirme o nome do sistema afetado."
+  ],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

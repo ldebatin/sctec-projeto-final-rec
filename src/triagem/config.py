@@ -42,7 +42,7 @@ class Configuracao:
     max_tentativas_llm: int = 2
     # Espera antes de nova tentativa quando o provedor devolve erro de quota (HTTP 429).
     llm_backoff_base_segundos: float = 2.0
-    limiar_bm25: float = 1.0
+    limiar_bm25: float = 12.0
     limiar_confianca: float = 0.6
     log_nivel: str = "INFO"
     log_formato: Literal["json", "texto"] = "json"
@@ -160,7 +160,7 @@ def carregar_configuracao(
         llm_timeout_segundos=_decimal(ambiente, "LLM_TIMEOUT_SEGUNDOS", 30.0, minimo=1.0),
         max_tentativas_llm=_inteiro(ambiente, "MAX_TENTATIVAS_LLM", 2, minimo=1),
         llm_backoff_base_segundos=_decimal(ambiente, "LLM_BACKOFF_BASE_SEGUNDOS", 2.0, minimo=0.0),
-        limiar_bm25=_decimal(ambiente, "LIMIAR_BM25", 1.0, minimo=0.0),
+        limiar_bm25=_decimal(ambiente, "LIMIAR_BM25", 12.0, minimo=0.0),
         limiar_confianca=_decimal(ambiente, "LIMIAR_CONFIANCA", 0.6, minimo=0.0),
         log_nivel=_texto(ambiente, "LOG_NIVEL", "INFO").upper(),
         log_formato=formato,  # type: ignore[arg-type]
