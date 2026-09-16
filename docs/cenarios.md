@@ -14,7 +14,7 @@ Todos os chamados de exemplo ficam em [`data/exemplos/`](../data/exemplos/) e s�
 
 A rota efetiva depende da análise do modelo e das regras determinísticas de `regras.py`; a coluna "esperada" é o comportamento-alvo, garantido pelos testes automatizados com o `FakeLLM`.
 
-> **Execução real (15/09/2026, prompts v1):** os cenários 02 a 07 se comportaram como esperado. O **01** caiu em rota `critico`: o Gemini sugeriu `media` (um usuário sem contorno, como o prompt manda) e a regra RF-44(a) elevava para `alta` por ser produção. Saídas, logs e a análise estão em [`evidencias/execucoes/prompt-v1/`](evidencias/execucoes/prompt-v1/README.md). Na issue #17 (QA com IA) a regra passou a exigir impacto além de um usuário; a nova execução do 01 em [`pos-qa-regras/`](evidencias/execucoes/prompt-v1/pos-qa-regras/) confirma a rota `simples` com o artigo `kb-001`. Os problemas de prompt ficam para a issue #16.
+> **Execução real (15/09/2026, prompts v1):** os cenários 02 a 07 se comportaram como esperado. O **01** caiu em rota `critico`: o Gemini sugeriu `media` (um usuário sem contorno, como o prompt manda) e a regra RF-44(a) elevava para `alta` por ser produção. Saídas, logs e a análise estão em [`evidencias/execucoes/prompt-v1/`](evidencias/execucoes/prompt-v1/README.md). Na issue #17 (QA com IA) a regra passou a exigir impacto além de um usuário; a nova execução do 01 em [`pos-qa-regras/`](evidencias/execucoes/prompt-v1/pos-qa-regras/) confirma a rota `simples` com o artigo `kb-001`. Na issue #16 os prompts foram refinados (v2) e a rodada completa em [`evidencias/execucoes/prompt-v2/`](evidencias/execucoes/prompt-v2/README.md) mostra os 7 cenários exatamente como a tabela acima prevê.
 
 ## Como executar
 
