@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.6 — 15/09/2026 (prompts v2 e ciclo de refinamento documentado na #16; `LIMIAR_CONFIANCA` confirmado) |
+| Versão do PRD | 1.7 — 16/09/2026 (evidências consolidadas na #19: índice `docs/evidencias/README.md`, layout `execucoes/` por versão de prompt em vez de `logs/` + `saidas/`) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -123,7 +123,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 |---|---|---|---|
 | RF-50 | Workflow `.github/workflows/ci.yml` disparado em push e pull request para `main`. | P1 | 12 |
 | RF-51 | Etapas: checkout, instalação do uv, `uv sync`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run pytest -m "not live"`. | P1 | 12 |
-| RF-52 | Badge de status no README e captura de tela de execução verde em `docs/evidencias/`. | P1 | 12 |
+| RF-52 | Badge de status no README e captura de tela de execução verde em `docs/evidencias/`. *Entregue nas issues #13 e #19 como registros gerados da API do Actions em `docs/evidencias/ci/` (dados da execução, jobs, etapas e contagem de testes), mais verificáveis que uma captura de tela.* | P1 | 12 |
 
 ### 3.7 Extensão E2 — Cenário adversarial de prompt injection
 
@@ -370,7 +370,7 @@ Formato: uma linha JSON por evento, em stderr e em `logs/<run_id>.jsonl`.
 | `erro` | `node`, `tipo`, `mensagem` |
 | `execucao_finalizada` | `rota`, `prioridade`, `requer_revisao_humana`, `duracao_total_ms` |
 
-Um log completo de cada cenário demonstrado é copiado para `docs/evidencias/logs/` como evidência (com dados fictícios).
+Um log completo de cada cenário demonstrado é copiado para `docs/evidencias/execucoes/<versão-do-prompt>/NN_nome.jsonl`, ao lado da saída `NN_nome.json` da mesma execução (mesmo `run_id`), com dados fictícios e PII mascarada. Índice e mapa para a rubrica em `docs/evidencias/README.md`. *Revisado em 16/09 (issue #19): o layout `logs/` + `saidas/` previsto originalmente foi trocado por pares por cenário e por versão de prompt, porque o refinamento da #16 precisa comparar antes/depois arquivo a arquivo.*
 
 ---
 
@@ -487,7 +487,7 @@ sctec-projeto-recuperacao/
 │   ├── qa-com-ia.md
 │   ├── extensoes.md
 │   ├── roteiro-video.md
-│   └── evidencias/ (logs, capturas do CI, saídas)
+│   └── evidencias/           # README.md (índice), testes.txt, ci/, execucoes/prompt-v1/, execucoes/prompt-v2/
 └── logs/ (gitignored)
 ```
 
@@ -523,11 +523,13 @@ SIMULAR_FALHA_TOOL=0
 | 6. Tool | 1,00 | `tools/catalogo.py`, T4, T5, exemplo 05 | RF-20…23 |
 | 7. Contexto | 1,00 | `retrieval.py`, base em `data/`, T1, T8, `fontes_contexto` | RF-30…33 |
 | 8. Segurança e falhas | 0,75 | `.env.example`, validação, exemplos 04/05, T3 | RF-02, RF-23, RNF-01…03 |
-| 9. Observabilidade | 0,50 | logs JSONL em `docs/evidencias/logs/` | seção 9 |
-| 10. QA com IA e testes | 0,75 | 9 testes offline, `docs/qa-com-ia.md` | seção 11, 12.3 |
+| 9. Observabilidade | 0,50 | logs JSONL em `docs/evidencias/execucoes/` (par `.json`/`.jsonl` por cenário) | seção 9 |
+| 10. QA com IA e testes | 0,75 | 9 testes offline, `docs/qa-com-ia.md`, `docs/evidencias/testes.txt` | seção 11, 12.3 |
 | 11. Prompts e refinamento | 0,50 | `docs/instrucoes-agente.md`, `docs/refinamento-prompt.md` | 12.1, 12.2 |
-| 12. Extensão 1 (CI) | 1,00 | `ci.yml`, badge, captura verde | RF-50…52 |
-| 13. Extensão 2 (injection) | 1,00 | `regras.py`, exemplo 06, T7, `docs/extensoes.md` | RF-60…63 |
+| 12. Extensão 1 (CI) | 1,00 | `ci.yml`, badge, registros em `docs/evidencias/ci/` | RF-50…52 |
+| 13. Extensão 2 (injection) | 1,00 | `regras.py`, exemplo 06, T7, `docs/extensoes.md`, `docs/evidencias/execucoes/*/06_prompt_injection.*` | RF-60…63 |
+
+O mapa completo de cada critério para o arquivo de evidência que o comprova está em [`docs/evidencias/README.md`](evidencias/README.md) (issue #19).
 
 ---
 
