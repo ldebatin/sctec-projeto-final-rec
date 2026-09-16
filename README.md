@@ -320,7 +320,9 @@ Duas extensões distintas do item 4.9 da especificação; nenhuma delas cumpre r
 
 ## 12. Vídeo de demonstração
 
-> Link do vídeo (não listado, até 10 minutos): **a preencher na issue #20**. Roteiro previsto na seção 17 do [PRD](docs/PRD.md#17-roteiro-do-vídeo--10-min).
+> Link do vídeo (não listado, até 10 minutos): **a preencher na issue #20**.
+
+Roteiro com blocos, tempos, comandos exatos e o mapeamento para os 8 itens do item 5.4 da especificação: [`docs/roteiro-video.md`](docs/roteiro-video.md).
 
 ## 13. Estrutura do repositório
 
@@ -346,6 +348,7 @@ sctec-projeto-recuperacao/
 │   ├── qa-com-ia.md           # revisão com IA e decisões do aluno
 │   ├── extensoes.md           # E1 e E2
 │   ├── prompts.md             # diário de prompts de desenvolvimento
+│   ├── roteiro-video.md       # blocos, tempos e comandos do vídeo
 │   └── evidencias/            # índice, saídas e logs reais, testes.txt, registros do CI
 └── logs/                      # gerado em execução, ignorado pelo Git
 ```
