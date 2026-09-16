@@ -349,6 +349,7 @@ sctec-projeto-recuperacao/
 │   ├── extensoes.md           # E1 e E2
 │   ├── prompts.md             # diário de prompts de desenvolvimento
 │   ├── roteiro-video.md       # blocos, tempos e comandos do vídeo
+│   ├── checklist-entrega.md   # revisão final item a item da especificação
 │   └── evidencias/            # índice, saídas e logs reais, testes.txt, registros do CI
 └── logs/                      # gerado em execução, ignorado pelo Git
 ```
