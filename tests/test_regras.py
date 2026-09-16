@@ -13,6 +13,7 @@ from triagem.regras import (
     MOTIVO_INJECAO,
     MOTIVO_ROTA_CRITICA,
     MOTIVO_TOOL_FALHOU,
+    PRIORIDADES_CRITICAS,
     ajustar_prioridade,
     classificar_risco,
     detectar_termos_indisponibilidade,
@@ -83,11 +84,21 @@ def analise(prioridade=Prioridade.MEDIA, impacto=Impacto.USUARIO_UNICO, **extras
             "critico",
             Prioridade.CRITICA,
         ),
-        # 5. média em produção → elevada para alta → crítico
+        # 5. média em produção para UM usuário → simples, sem elevação
+        #    (revisado na QA com IA, issue #17: caso real do exemplo 01, reset de senha)
         (
             Prioridade.MEDIA,
             Ambiente.PRODUCAO,
             Impacto.USUARIO_UNICO,
+            DESCRICAO_NEUTRA,
+            "simples",
+            Prioridade.MEDIA,
+        ),
+        # 5b. média em produção para uma equipe → elevada para alta → crítico
+        (
+            Prioridade.MEDIA,
+            Ambiente.PRODUCAO,
+            Impacto.EQUIPE,
             DESCRICAO_NEUTRA,
             "critico",
             Prioridade.ALTA,
@@ -164,8 +175,11 @@ def test_motivo_da_rota_explica_a_origem():
     sugerida = classificar_risco(analise(Prioridade.ALTA), chamado())
     assert "sugerida pelo modelo" in sugerida.motivo
 
-    elevada = classificar_risco(analise(Prioridade.MEDIA), chamado(ambiente=Ambiente.PRODUCAO))
-    assert "elevada por regra" in elevada.motivo
+    elevada = classificar_risco(
+        analise(Prioridade.MEDIA, Impacto.EQUIPE), chamado(ambiente=Ambiente.PRODUCAO)
+    )
+    # O motivo cita a regra que elevou (revisão da QA com IA, issue #17).
+    assert elevada.motivo == f"prioridade alta (elevada por regra: {ALERTA_ELEVADA_PRODUCAO})"
     assert elevada.alertas == (ALERTA_ELEVADA_PRODUCAO,)
 
     termo = classificar_risco(
@@ -174,6 +188,7 @@ def test_motivo_da_rota_explica_a_origem():
     assert termo.termos_encontrados == ("vazamento",)
     assert ALERTA_ELEVADA_INDISPONIBILIDADE in termo.alertas
     assert termo.prioridade is Prioridade.ALTA
+    assert ALERTA_ELEVADA_INDISPONIBILIDADE in termo.motivo
 
     simples = classificar_risco(analise(Prioridade.BAIXA), chamado())
     assert simples.motivo.startswith("prioridade baixa")
@@ -213,6 +228,66 @@ def test_termos_configuraveis():
     )
     assert resultado.rota == "critico"
     assert resultado.termos_encontrados == ("degradado",)
+
+
+# --------------------------------------------------------------------------- QA com IA (issue #17)
+
+
+def test_reset_de_senha_de_um_usuario_em_producao_e_rota_simples():
+    """Caso real da execução com o Gemini (docs/evidencias/execucoes/prompt-v1/01_reset_senha):
+    o modelo sugeriu `media` para um usuário sem contorno e a regra antiga elevava para
+    `alta`, mandando um reset de senha para a rota crítica."""
+    analise_gemini = analise(
+        Prioridade.MEDIA,
+        Impacto.USUARIO_UNICO,
+        categoria=Categoria.SUPORTE,
+        servico_mencionado="Active Directory",
+    )
+    resultado = classificar_risco(
+        analise_gemini,
+        chamado(
+            "Tentei entrar no computador hoje cedo e a senha não funcionou. Depois de "
+            "algumas tentativas apareceu a mensagem de conta bloqueada.",
+            Ambiente.PRODUCAO,
+            titulo="Esqueci minha senha e a conta bloqueou",
+        ),
+    )
+    assert resultado.rota == "simples"
+    assert resultado.prioridade is Prioridade.MEDIA
+    assert resultado.alertas == ()
+
+
+@pytest.mark.parametrize(
+    ("prioridade", "ambiente", "impacto", "com_termo"),
+    [(p, a, i, t) for p in Prioridade for a in Ambiente for i in Impacto for t in (False, True)],
+)
+def test_rota_critica_e_funcao_apenas_da_prioridade_final(prioridade, ambiente, impacto, com_termo):
+    """Propriedade verificada na QA: depois das elevações de RF-44, `rota == critico` se e
+    somente se a prioridade final é alta ou crítica (os ramos redundantes saíram de
+    `definir_rota`)."""
+    descricao = "Sistema fora do ar para a área toda." if com_termo else DESCRICAO_NEUTRA
+    resultado = classificar_risco(analise(prioridade, impacto), chamado(descricao, ambiente))
+    assert (resultado.rota == "critico") == (resultado.prioridade in PRIORIDADES_CRITICAS)
+    if resultado.rota == "critico" and prioridade not in PRIORIDADES_CRITICAS:
+        assert "elevada por regra: " in resultado.motivo
+        assert all(alerta in resultado.motivo for alerta in resultado.alertas)
+
+
+@pytest.mark.parametrize(
+    ("frase", "termo"),
+    [
+        ("Estarei indisponível na sexta para o treinamento do ERP.", "indisponivel"),
+        ("Vazamento de água no banheiro do 3º andar, perto do rack.", "vazamento"),
+        ("O ar-condicionado da sala de servidores está fora do ar.", "fora do ar"),
+    ],
+)
+def test_termos_disparam_em_frases_legitimas_por_desenho(frase, termo):
+    """Limitação conhecida, mantida de propósito (decisão registrada em docs/qa-com-ia.md):
+    a comparação é por substring, sem semântica. O erro é na direção segura (revisão
+    humana a mais), e um incidente real nunca deixa de ser elevado."""
+    assert detectar_termos_indisponibilidade(frase) == [termo]
+    resultado = classificar_risco(analise(Prioridade.BAIXA), chamado(frase))
+    assert resultado.rota == "critico" and resultado.prioridade is Prioridade.ALTA
 
 
 # --------------------------------------------------------------------------- revisão humana (RF-45)

@@ -29,6 +29,10 @@ RotaDecidida = Literal["simples", "critico"]
 # Termos que indicam indisponibilidade ampla. Comparados sem acento e em minúsculas.
 # "não acessa" (citado no PRD) ficou de fora: é típico de problema de um único
 # usuário (senha, permissão) e gerava rota crítica indevida.
+# Limitação conhecida e aceita (QA com IA, issue #17): a comparação é por substring e sem
+# semântica, então "estarei indisponível na sexta" ou "vazamento de água" também disparam.
+# O erro é na direção segura (só gera revisão humana a mais), e a regra continua simples de
+# explicar; um incidente real nunca deixa de ser elevado por causa disso.
 TERMOS_INDISPONIBILIDADE: tuple[str, ...] = (
     "fora do ar",
     "indisponivel",
@@ -96,16 +100,24 @@ def ajustar_prioridade(
     """Prioridade final = sugerida pelo modelo, elevada por regras da aplicação (RF-44).
 
     Elevações (cada uma gera um alerta próprio):
-    - produção + prioridade sugerida ``media`` → ``alta``;
+    - produção + prioridade sugerida ``media`` + impacto além de um usuário → ``alta``;
     - termos de indisponibilidade no texto → pelo menos ``alta``;
     - produção + impacto amplo → pelo menos ``alta``.
     A prioridade nunca é rebaixada: o modelo pode estar certo em ser mais severo.
+
+    Revisado em 15/09 (QA com IA, issue #17): a elevação (a) passou a exigir impacto além de
+    ``usuario_unico``. Antes, um reset de senha de um usuário em produção virava rota crítica
+    (evidência real: ``docs/evidencias/execucoes/prompt-v1/01_reset_senha.json``).
     """
     prioridade = analise.prioridade_sugerida
     alertas: list[str] = []
     em_producao = chamado.ambiente is Ambiente.PRODUCAO
 
-    if em_producao and prioridade is Prioridade.MEDIA:
+    if (
+        em_producao
+        and prioridade is Prioridade.MEDIA
+        and analise.impacto is not Impacto.USUARIO_UNICO
+    ):
         prioridade = Prioridade.ALTA
         alertas.append(ALERTA_ELEVADA_PRODUCAO)
 
@@ -128,24 +140,22 @@ def definir_rota(
     analise: AnaliseChamado,
     chamado: Chamado,
     prioridade_final: Prioridade,
-    termos_encontrados: Sequence[str] = (),
+    alertas: Sequence[str] = (),
 ) -> tuple[RotaDecidida, str]:
     """Rota ``critico`` ou ``simples`` com o motivo (RF-43).
 
-    É ``critico`` se qualquer condição valer: prioridade final alta/crítica;
-    produção com impacto amplo; termos de indisponibilidade no texto.
+    Depois de ``ajustar_prioridade``, a rota é função apenas da prioridade final: as
+    condições "produção com impacto amplo" e "termos de indisponibilidade" já elevaram a
+    prioridade para pelo menos ``alta`` (RF-44 b e c). Revisado em 15/09 (QA com IA, issue
+    #17): os dois ramos que repetiam essas condições aqui eram inalcançáveis via
+    ``classificar_risco`` (128 combinações verificadas) e foram removidos; em troca, o
+    motivo passa a citar a regra que elevou, para o log de roteamento ser explicável.
     """
     if prioridade_final in PRIORIDADES_CRITICAS:
-        origem = (
-            "sugerida pelo modelo"
-            if analise.prioridade_sugerida in PRIORIDADES_CRITICAS
-            else "elevada por regra"
-        )
-        return "critico", f"prioridade {prioridade_final.value} ({origem})"
-    if chamado.ambiente is Ambiente.PRODUCAO and analise.impacto in IMPACTOS_AMPLOS:
-        return "critico", f"ambiente producao com impacto {analise.impacto.value}"
-    if termos_encontrados:
-        return "critico", "termos de indisponibilidade: " + ", ".join(termos_encontrados)
+        if analise.prioridade_sugerida in PRIORIDADES_CRITICAS:
+            return "critico", f"prioridade {prioridade_final.value} (sugerida pelo modelo)"
+        regras = ", ".join(alertas) if alertas else "regra da aplicação"
+        return "critico", f"prioridade {prioridade_final.value} (elevada por regra: {regras})"
     return "simples", (
         f"prioridade {prioridade_final.value}, impacto {analise.impacto.value}, "
         f"ambiente {chamado.ambiente.value}"
@@ -167,7 +177,7 @@ def classificar_risco(
         f"{chamado.titulo}\n{chamado.descricao}", termos
     )
     prioridade, alertas = ajustar_prioridade(analise, chamado, encontrados)
-    rota, motivo = definir_rota(analise, chamado, prioridade, encontrados)
+    rota, motivo = definir_rota(analise, chamado, prioridade, alertas)
     return Classificacao(
         rota=rota,
         prioridade=prioridade,
@@ -268,11 +278,31 @@ def detectar_injecao(texto: str) -> list[str]:
     return [rotulo for rotulo, padrao in PADROES_INJECAO if padrao.search(normalizado)]
 
 
+_FRAGMENTO_MINIMO_SEGREDO = 12
+
+
 def redigir_segredos(texto: str, segredos: Iterable[str | None]) -> tuple[str, bool]:
-    """Substitui ocorrências literais de segredos (ex.: a chave de API) por ``[REDIGIDO]``."""
+    """Substitui por ``[REDIGIDO]`` ocorrências literais de segredos (ex.: a chave de API) ou de
+    fragmentos deles com pelo menos 12 caracteres.
+
+    Revisado em 15/09 (QA com IA, issue #17): antes só a chave inteira era redigida, e um
+    modelo manipulado que citasse "os 20 primeiros caracteres" vazava parte do segredo.
+    Fragmentos são varridos do maior para o menor; marcadores adjacentes são fundidos.
+    """
     redigido = False
     for segredo in segredos:
-        if segredo and len(segredo) >= 8 and segredo in texto:
+        if not segredo or len(segredo) < 8:
+            continue
+        if segredo in texto:
             texto = texto.replace(segredo, "[REDIGIDO]")
             redigido = True
+            continue
+        for tamanho in range(len(segredo) - 1, _FRAGMENTO_MINIMO_SEGREDO - 1, -1):
+            for inicio in range(len(segredo) - tamanho + 1):
+                fragmento = segredo[inicio : inicio + tamanho]
+                if fragmento in texto:
+                    texto = texto.replace(fragmento, "[REDIGIDO]")
+                    redigido = True
+    while "[REDIGIDO][REDIGIDO]" in texto:
+        texto = texto.replace("[REDIGIDO][REDIGIDO]", "[REDIGIDO]")
     return texto, redigido

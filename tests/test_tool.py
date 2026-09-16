@@ -70,6 +70,49 @@ def test_resolver_desconhecido_e_vazio(catalogo):
     assert catalogo.resolver("   ") is None
 
 
+@pytest.mark.parametrize(
+    "frase",
+    [
+        "O banco recusou o boleto do cliente",
+        "O domínio empresa.com.br expirou no registro.br",
+        "Sem autenticação no wifi da recepção",
+    ],
+)
+def test_apelidos_genericos_nao_resolvem_frases_fora_do_dominio(catalogo, frase):
+    """QA com IA (issue #17): "banco", "dominio" e "autenticacao" saíram dos aliases porque
+    resolviam frases sem relação com o serviço."""
+    assert catalogo.resolver(frase) is None
+
+
+def test_apelido_repetido_entre_servicos_falha_na_carga(tmp_path):
+    """QA com IA (issue #17): antes, `resolver` escolhia em silêncio o primeiro da lista."""
+    base = {
+        "equipe_responsavel": "Time",
+        "criticidade": "baixa",
+        "status_atual": "operacional",
+        "ambientes": ["producao"],
+        "runbook": "1. Verificar.",
+        "contato_escalonamento": "time@empresa.exemplo",
+    }
+    caminho = tmp_path / "catalogo.json"
+    caminho.write_text(
+        json.dumps(
+            [
+                {"id": "a", "nome": "Serviço A", "aliases": ["portal"], **base},
+                {"id": "b", "nome": "Serviço B", "aliases": ["Portal"], **base},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ErroCatalogoIndisponivel, match="apelido 'portal' repetido"):
+        Catalogo.carregar(caminho)
+
+
+def test_resolver_normaliza_unicode_de_largura_total(catalogo):
+    servico = catalogo.resolver("\uff21ctive Directory")  # "Ａ" de largura total
+    assert servico is not None and servico.id == "active-directory"
+
+
 def test_obter_catalogo_e_cacheado():
     assert obter_catalogo(CAMINHO_CATALOGO) is obter_catalogo(CAMINHO_CATALOGO)
 
@@ -145,6 +188,13 @@ def test_tool_valida_parametros(servico):
     tool = criar_tool_catalogo(CAMINHO_CATALOGO)
     with pytest.raises(ValidationError):
         tool.invoke({"servico": servico})
+
+
+def test_tool_aceita_servico_no_limite_de_100_caracteres():
+    """Fronteira do contrato (RF-21): 100 caracteres passam na validação e chegam à consulta."""
+    tool = criar_tool_catalogo(CAMINHO_CATALOGO)
+    resultado = tool.invoke({"servico": "x" * 100})
+    assert resultado.ok is False and resultado.erro == "servico_nao_encontrado"
 
 
 def test_tool_ambiente_invalido_rejeitado():
