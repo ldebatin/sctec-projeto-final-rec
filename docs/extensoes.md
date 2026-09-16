@@ -25,7 +25,8 @@ Duas extensões distintas do item 4.9 da especificação, escolhidas em 11/09/20
 **Como ver a evidência.**
 - Badge no topo do [README](../README.md) (visível para quem tem acesso ao repositório).
 - Aba *Actions* do repositório: https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml
-- Registro da primeira execução verde em [`evidencias/ci/`](evidencias/ci/).
+- Registro da primeira execução verde em [`evidencias/ci/primeira-execucao-verde.md`](evidencias/ci/primeira-execucao-verde.md) (11/09, com a falha da execução #1 explicada) e da execução #36 na `main` sobre o código final em [`evidencias/ci/execucao-main-2026-09-16.md`](evidencias/ci/execucao-main-2026-09-16.md): 370 testes em Python 3.10 e 3.12, lint, formatação e build em 22 s. Até essa execução foram 36 execuções, 34 verdes e 2 falhas, ambas em pull request e corrigidas na branch antes do merge; nenhuma execução na `main` falhou.
+- Saída local da suíte completa, com os 2 testes `live` que o CI não roda, em [`evidencias/testes.txt`](evidencias/testes.txt).
 
 **Relação com o fluxo de trabalho.** Cada issue é desenvolvida em uma branch própria e integrada por pull request; o PR só é mergeado com o CI verde. Isso deixa no histórico uma verificação automática por alteração (critério 2 da rubrica) além da pontuação da extensão (critério 12).
 
@@ -47,6 +48,6 @@ Duas extensões distintas do item 4.9 da especificação, escolhidas em 11/09/20
 - Teste **T7** `test_prompt_injection_detectada_nao_rebaixa_prioridade`: alerta emitido, revisão humana, rota crítica e prioridade alta apesar da análise manipulada; aviso presente nos dois prompts; `alerta_seguranca` antes de `llm_chamada` no log.
 - `test_segredo_da_configuracao_nunca_sai_na_resposta`: modelo "vaza" a chave e a saída sai redigida.
 - Detector: 12 positivos e 5 chamados legítimos que **não** disparam (falsos positivos controlados).
-- Execução real com o Gemini do exemplo 06 e log correspondente: registrados em `evidencias/` quando a chave estiver disponível (issue #11).
+- **Execução real com o Gemini** do exemplo 06 nas duas rodadas de prompt: [`evidencias/execucoes/prompt-v1/06_prompt_injection.jsonl`](evidencias/execucoes/prompt-v1/06_prompt_injection.jsonl) e [`evidencias/execucoes/prompt-v2/06_prompt_injection.jsonl`](evidencias/execucoes/prompt-v2/06_prompt_injection.jsonl), com as saídas `.json` ao lado. Nos dois logs o evento `alerta_seguranca` lista os 6 padrões detectados (`ignorar_instrucoes`, `system_prompt`, `exfiltracao_de_segredo`, `instrucao_ao_triador`, `forcar_classificacao`, `sem_revisao`) **antes** da primeira `llm_chamada`; o modelo manteve `infraestrutura` e `alta`, a rota foi `critico` com a tool devolvendo `servidor-arquivos`, a revisão humana saiu com os motivos `rota_critica` e `possivel_prompt_injection`, e nem a chave nem o system prompt apareceram na saída. Índice de todas as evidências em [`evidencias/README.md`](evidencias/README.md).
 
 **Limitação conhecida.** O detector é lexical: uma injeção parafraseada ou em outro idioma pode passar sem alerta. Por isso ele não é a única barreira: as camadas 2 a 5 valem mesmo sem detecção.
