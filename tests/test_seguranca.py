@@ -147,6 +147,20 @@ def test_redigir_segredos_ignora_vazios_e_curtos():
     assert redigir_segredos("nada aqui", ["chave-teste"]) == ("nada aqui", False)
 
 
+def test_redigir_segredos_cobre_fragmentos_da_chave():
+    """QA com IA (issue #17): um modelo manipulado pode citar só parte da chave."""
+    chave = "AIzaSyEXEMPLO0123456789abcdefghijklmnopq"
+    texto, redigido = redigir_segredos(
+        f"A chave começa com {chave[:20]} e termina com {chave[-14:]}.", [chave]
+    )
+    assert redigido is True
+    assert chave[:12] not in texto and chave[-12:] not in texto
+    assert texto == "A chave começa com [REDIGIDO] e termina com [REDIGIDO]."
+
+    # Fragmentos curtos (< 12) não são redigidos: evitariam falsos positivos em texto comum.
+    assert redigir_segredos(f"prefixo {chave[:8]}", [chave]) == (f"prefixo {chave[:8]}", False)
+
+
 # --------------------------------------------------------------------------- prompts (RF-62)
 
 

@@ -57,7 +57,7 @@
   {
     "id": "banco-dados",
     "nome": "Banco de Dados Corporativo",
-    "aliases": ["banco de dados", "banco", "database", "sql", "cluster de banco"],
+    "aliases": ["banco de dados", "database", "sql", "cluster de banco"],
     "equipe_responsavel": "DBA",
     "criticidade": "alta",
     "status_atual": "operacional",
@@ -68,7 +68,7 @@
   {
     "id": "active-directory",
     "nome": "Active Directory",
-    "aliases": ["ad", "active directory", "dominio", "contas de usuario", "autenticacao", "login de rede"],
+    "aliases": ["ad", "active directory", "contas de usuario", "login de rede"],
     "equipe_responsavel": "Identidade e Acessos",
     "criticidade": "alta",
     "status_atual": "operacional",

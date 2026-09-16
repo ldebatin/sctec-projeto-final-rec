@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.4 — 15/09/2026 (integração real com o Gemini e calibração de `LIMIAR_BM25` na #11; Q1 resolvida) |
+| Versão do PRD | 1.5 — 15/09/2026 (QA com IA na #17: RF-43 e RF-44(a) revisados, redação por fragmentos, apelidos do catálogo) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -94,7 +94,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 |---|---|---|---|
 | RF-20 | Tool `consultar_catalogo_servicos(servico, ambiente)` com schema de argumentos Pydantic e saída `ResultadoCatalogo` tipada. | P0 | 6 |
 | RF-21 | Validar parâmetros: `servico` string não vazia, até 100 caracteres, normalizada (minúsculas, sem espaços extras); `ambiente` opcional em enum. | P0 | 6, 8 |
-| RF-22 | Resolver o serviço por nome ou alias no `data/catalogo_servicos.json` e retornar equipe responsável, criticidade, status atual, runbook e contato de escalonamento. *Entregue na issue #9 com 8 serviços (API de Pagamentos com status `degradado`) e resolução também por alias contido na frase.* | P0 | 6 |
+| RF-22 | Resolver o serviço por nome ou alias no `data/catalogo_servicos.json` e retornar equipe responsável, criticidade, status atual, runbook e contato de escalonamento. *Entregue na issue #9 com 8 serviços (API de Pagamentos com status `degradado`) e resolução também por alias contido na frase. Revisado em 15/09 (issue #17, QA com IA): apelido repetido entre serviços falha na carga (`catalogo_indisponivel`), e os apelidos genéricos "banco", "dominio" e "autenticacao" saíram do catálogo por resolverem frases fora do domínio.* | P0 | 6 |
 | RF-23 | Tratar falhas: serviço não encontrado, serviço não identificado pela análise, catálogo indisponível ou corrompido, falha simulada (`SIMULAR_FALHA_TOOL=1`). A falha vira `tool_resultado.ok = false` e o fluxo segue para `gerar_resposta` com `requer_revisao_humana = true`. | P0 | 6, 8 |
 
 ### 3.4 Contexto e base de conhecimento
@@ -113,8 +113,8 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | RF-40 | `categoria` ∈ {`software`, `infraestrutura`, `suporte`, `indefinido`}. | P0 | 4 |
 | RF-41 | `prioridade` ∈ {`baixa`, `media`, `alta`, `critica`}. | P0 | 4 |
 | RF-42 | `impacto` (da análise) ∈ {`usuario_unico`, `equipe`, `multiplos_usuarios`, `toda_organizacao`}. | P0 | 5 |
-| RF-43 | Regra de rota em `classificar_risco`: `critico` se prioridade **final** ∈ {`alta`, `critica`} **ou** (`ambiente = producao` e impacto ∈ {`multiplos_usuarios`, `toda_organizacao`}) **ou** presença de termos de indisponibilidade (lista configurável em `regras.py`: "fora do ar", "indisponível", "todos os usuários", "ninguém consegue", "sistema parado", "queda geral", "perda de dados", "vazamento"); senão `simples`. *Revisado em 11/09 (issue #5): "não acessa" saiu da lista por ser típico de problema de um único usuário.* | P0 | 5 |
-| RF-44 | Regras de elevação da prioridade (nunca rebaixam), cada uma com alerta próprio em `alertas`: (a) `ambiente = producao` e prioridade sugerida `media` → `alta`; (b) termo de indisponibilidade no texto → pelo menos `alta`; (c) `ambiente = producao` com impacto amplo → pelo menos `alta`. *Revisado em 11/09 (issue #5): (b) e (c) evitam rota crítica com prioridade baixa, que seria contraditória.* | P0 | 5 |
+| RF-43 | Regra de rota em `classificar_risco`: `critico` se prioridade **final** ∈ {`alta`, `critica`}; senão `simples`. As condições "produção com impacto amplo" e "termos de indisponibilidade" (lista configurável em `regras.py`: "fora do ar", "indisponível", "todos os usuários", "ninguém consegue", "sistema parado", "queda geral", "perda de dados", "vazamento") levam à rota crítica por meio das elevações de RF-44, e o motivo registrado no log cita a regra que elevou. *Revisado em 11/09 (issue #5): "não acessa" saiu da lista por ser típico de problema de um único usuário. Revisado em 15/09 (issue #17, QA com IA): os ramos que repetiam as condições de RF-44 em `definir_rota` eram inalcançáveis e foram removidos; a comparação por substring dos termos foi mantida como limitação conhecida (erro na direção segura).* | P0 | 5 |
+| RF-44 | Regras de elevação da prioridade (nunca rebaixam), cada uma com alerta próprio em `alertas`: (a) `ambiente = producao`, prioridade sugerida `media` **e impacto além de `usuario_unico`** → `alta`; (b) termo de indisponibilidade no texto → pelo menos `alta`; (c) `ambiente = producao` com impacto amplo → pelo menos `alta`. *Revisado em 11/09 (issue #5): (b) e (c) evitam rota crítica com prioridade baixa, que seria contraditória. Revisado em 15/09 (issue #17, QA com IA): (a) passou a exigir impacto além de um usuário; na execução real, o reset de senha de um usuário em produção (exemplo 01) virava rota crítica.* | P0 | 5 |
 | RF-45 | Regra de revisão humana: `requer_revisao_humana = true` se rota `critico`, **ou** categoria `indefinido`, **ou** `confianca < 0.6`, **ou** tool falhou, **ou** suspeita de prompt injection, **ou** falha tratada. | P0 | 4 |
 
 ### 3.6 Extensão E1 — Pipeline de CI
@@ -130,7 +130,7 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | ID | Requisito | Prioridade | Rubrica |
 |---|---|---|---|
 | RF-60 | Detector determinístico `detectar_injecao(texto)` com padrões (pt-BR e inglês): "ignore as instruções anteriores", "ignore previous instructions", "system prompt", "você agora é", "revele/mostre sua chave", "responda apenas com", "classifique como baixa" etc. Retorna lista de padrões encontrados. | P1 | 13 |
-| RF-61 | Em `validar_entrada`, suspeita de injeção adiciona `possivel_prompt_injection` a `alertas`, gera log `alerta_seguranca` e força `requer_revisao_humana = true`, sem interromper o fluxo. *Entregue na issue #14, mais dois controles adicionais: aviso extra anexado aos prompts quando há suspeita e redação de segredos (`[REDIGIDO]`, alerta `segredo_redigido`) na saída.* | P1 | 13 |
+| RF-61 | Em `validar_entrada`, suspeita de injeção adiciona `possivel_prompt_injection` a `alertas`, gera log `alerta_seguranca` e força `requer_revisao_humana = true`, sem interromper o fluxo. *Entregue na issue #14, mais dois controles adicionais: aviso extra anexado aos prompts quando há suspeita e redação de segredos (`[REDIGIDO]`, alerta `segredo_redigido`) na saída. Revisado em 15/09 (issue #17): a redação também cobre fragmentos do segredo com 12 ou mais caracteres.* | P1 | 13 |
 | RF-62 | Prompts do agente delimitam o conteúdo do chamado com marcadores explícitos e instruem o modelo a tratá-lo como dado, nunca como instrução. | P1 | 13 |
 | RF-63 | Chamado adversarial em `data/exemplos/` e teste automatizado provando que a prioridade não é rebaixada pela instrução injetada e que o alerta é emitido. | P1 | 13 |
 

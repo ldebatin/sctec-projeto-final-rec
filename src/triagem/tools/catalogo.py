@@ -86,6 +86,16 @@ class Catalogo:
         if not servicos:
             raise ErroCatalogoIndisponivel("catálogo sem serviços")
         self.servicos = list(servicos)
+        # Um apelido repetido entre serviços faria `resolver` escolher em silêncio o primeiro
+        # da lista (QA com IA, issue #17): falha na carga, com mensagem que aponta o par.
+        donos: dict[str, str] = {}
+        for servico in self.servicos:
+            for chave in servico.chaves():
+                dono = donos.setdefault(chave, servico.id)
+                if dono != servico.id:
+                    raise ErroCatalogoIndisponivel(
+                        f"apelido '{chave}' repetido entre os serviços '{dono}' e '{servico.id}'"
+                    )
 
     @classmethod
     def carregar(cls, caminho: Path) -> Catalogo:
@@ -131,7 +141,9 @@ class Catalogo:
         """Casa por id, nome ou alias (sem acento, sem caixa); depois por alias contido na frase.
 
         Na busca por alias contido, vence o alias mais longo (mais específico), para que
-        "portal web" prevaleça sobre "portal" quando ambos aparecerem.
+        "portal web" prevaleça sobre "portal" quando ambos aparecerem. Apelidos de uso
+        corrente fora de TI ("banco", "dominio", "autenticacao") saíram do catálogo em 15/09
+        (QA com IA, issue #17) porque resolviam frases como "o banco recusou o boleto".
         """
         alvo = normalizar_texto(referencia)
         if not alvo:
