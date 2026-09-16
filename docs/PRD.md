@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.7 — 16/09/2026 (evidências consolidadas na #19: índice `docs/evidencias/README.md`, layout `execucoes/` por versão de prompt em vez de `logs/` + `saidas/`) |
+| Versão do PRD | 1.8 — 16/09/2026 (revisão final da #21: seção 13 alinhada ao repositório, RF-71 e RF-72 anotados como entregues, Q2 e Q3 marcadas como resolvidas) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -139,8 +139,8 @@ Prioridade: **P0** = núcleo obrigatório da rubrica; **P1** = extensões escolh
 | ID | Requisito | Prioridade |
 |---|---|---|
 | RF-70 | Mascarar e-mails e CPFs nos logs (regex simples) para não vazar dados pessoais em evidências. *Entregue na issue #15: aplicado a todos os detalhes de evento, inclusive aninhados; a saída da triagem não é alterada.* | P2 |
-| RF-71 | Comando `triagem exemplos` que lista os chamados de exemplo com uma linha de descrição. | P2 |
-| RF-72 | Comando `triagem grafo` que imprime o diagrama Mermaid do grafo gerado pelo LangGraph (`get_graph().draw_mermaid()`) para colar no README. | P2 |
+| RF-71 | Comando `triagem exemplos` que lista os chamados de exemplo com uma linha de descrição. *Entregue na issue #7 (`cli.py`): lê o campo `_cenario` de cada arquivo de `data/exemplos/`.* | P2 |
+| RF-72 | Comando `triagem grafo` que imprime o diagrama Mermaid do grafo gerado pelo LangGraph (`get_graph().draw_mermaid()`) para colar no README. *Entregue na issue #7 (`cli.py`, `diagrama_mermaid()` em `grafo.py`); o diagrama está na seção 2 do README e um teste garante que ele lista todos os nodes.* | P2 |
 
 ---
 
@@ -444,7 +444,10 @@ sctec-projeto-recuperacao/
 ├── uv.lock
 ├── .env.example
 ├── .gitignore
-├── .github/workflows/ci.yml
+├── .python-version          # 3.12 (requires-python >= 3.10)
+├── .github/
+│   ├── workflows/ci.yml     # extensão E1
+│   └── dependabot.yml       # atualiza os hashes das actions (issue #23)
 ├── src/triagem/
 │   ├── __init__.py
 │   ├── config.py            # leitura do .env, constantes (MAX_TENTATIVAS_LLM, limiares)
@@ -452,25 +455,30 @@ sctec-projeto-recuperacao/
 │   ├── estado.py            # EstadoTriagem (TypedDict + reducers)
 │   ├── llm.py               # fábrica do modelo (init_chat_model) e FakeLLM
 │   ├── prompts.py           # system prompts do agente (fonte da verdade; docs espelham)
-│   ├── regras.py            # classificar_risco, detectar_injecao, revisão humana
+│   ├── regras.py            # classificar_risco, detectar_injecao, revisão humana, redação de segredos
 │   ├── retrieval.py         # carga da base e BM25
 │   ├── tools/catalogo.py    # consultar_catalogo_servicos
 │   ├── nodes.py             # funções dos nodes
 │   ├── contexto.py          # ContextoExecucao (cfg, llm, registro) injetado via Runtime
 │   ├── grafo.py             # StateGraph, edges, roteamento, criar_grafo(), executar_triagem(...)
-│   ├── observabilidade.py   # logger JSON, run_id, helpers de evento
-│   └── cli.py               # Typer: triar, exemplos, grafo
-├── tests/
-│   ├── conftest.py          # fixtures: fake_llm, grafo_teste, chamados de exemplo
-│   ├── test_fluxo.py
-│   ├── test_tool.py
-│   ├── test_regras.py
-│   ├── test_retrieval.py
-│   ├── test_seguranca.py
-│   └── test_live.py
+│   ├── observabilidade.py   # logger JSON, run_id, helpers de evento, mascaramento de PII
+│   └── cli.py               # Typer: versao, triar, exemplos, grafo
+├── tests/                   # 16 arquivos, 372 testes (370 offline + 2 live)
+│   ├── conftest.py          # fixtures compartilhadas
+│   ├── dados.py             # chamados e análises de exemplo para os testes
+│   ├── test_grafo.py        # fluxo simples e crítico, entrada inválida, retry, prova do único ciclo
+│   ├── test_tool.py         # contrato, validação, falhas e tool no fluxo
+│   ├── test_regras.py       # rota, elevações, revisão humana, termos
+│   ├── test_seguranca.py    # detector de injeção, prioridade não rebaixada, redação de segredos
+│   ├── test_retrieval.py    # BM25 e limiar
+│   ├── test_resposta.py     # uso do contexto na resposta e fallback sem LLM
+│   ├── test_observabilidade.py, test_pii.py
+│   ├── test_modelos.py, test_config.py, test_cli.py, test_exemplos.py, test_llm.py, test_backoff.py
+│   ├── test_prompts_docs.py # docs/instrucoes-agente.md igual ao código
+│   └── test_live.py         # ponta a ponta com o Gemini (marcador live)
 ├── data/
-│   ├── base_conhecimento/*.md
-│   ├── catalogo_servicos.json
+│   ├── base_conhecimento/*.md             # 10 artigos
+│   ├── catalogo_servicos.json             # 8 serviços
 │   └── exemplos/
 │       ├── 01_reset_senha.json            # simples, suporte
 │       ├── 02_portal_fora_do_ar.json      # critico, software, producao
@@ -481,13 +489,15 @@ sctec-projeto-recuperacao/
 │       └── 07_fora_do_dominio.json        # categoria indefinido
 ├── docs/
 │   ├── PRD.md
+│   ├── cenarios.md               # o que cada exemplo demonstra e como reproduzir falhas
 │   ├── prompts.md                # diário de prompts de desenvolvimento
 │   ├── instrucoes-agente.md
 │   ├── refinamento-prompt.md
 │   ├── qa-com-ia.md
 │   ├── extensoes.md
 │   ├── roteiro-video.md
-│   └── evidencias/           # README.md (índice), testes.txt, ci/, execucoes/prompt-v1/, execucoes/prompt-v2/
+│   ├── checklist-entrega.md      # revisão final item a item da especificação
+│   └── evidencias/               # README.md (índice), testes.txt, ci/, execucoes/prompt-v1/, execucoes/prompt-v2/
 └── logs/ (gitignored)
 ```
 
@@ -622,8 +632,8 @@ O mapa completo de cada critério para o arquivo de evidência que o comprova es
 | # | Questão | Impacto | Prazo para decidir |
 |---|---|---|---|
 | Q1 | ~~Modelo flash exato do Gemini disponível~~ Resolvida em 15/09 (issue #11): `gemini-2.5-flash` responde com saída estruturada válida em 14 de 14 chamadas; a conta usada tem faturamento ativo (`serviceTier: standard`) | — | — |
-| Q2 | Versões atuais de `langgraph` e `langchain-google-genai` e sintaxe vigente de `with_structured_output` / `init_chat_model` | `llm.py`, `grafo.py` | 12/09, no scaffold |
-| Q3 | Se o Python 3.10 local atende às dependências ou se instalamos 3.12 via uv | `pyproject` | 11/09, no scaffold |
+| Q2 | ~~Versões atuais de `langgraph` e `langchain-google-genai` e sintaxe vigente de `with_structured_output` / `init_chat_model`~~ Resolvida em 11/09 (issues #3 e #6): `langgraph` 1.2, `langchain` 1.4 e `langchain-google-genai` 4.4 travados no `uv.lock`; `init_chat_model` e `with_structured_output` documentados no docstring de `llm.py`; nodes e roteamento recebem `Runtime[ContextoExecucao]` | — | — |
+| Q3 | ~~Se o Python 3.10 local atende às dependências ou se instalamos 3.12 via uv~~ Resolvida em 11/09 (issue #1): Python 3.12 instalado pelo uv e fixado em `.python-version`; `requires-python >= 3.10` mantido e verificado no CI em matriz 3.10 e 3.12 | — | — |
 | Q4 | ~~Nível de detalhe dos artigos da base~~ Resolvida em 11/09 (issue #8): 10 artigos médios, com seções Sintomas, Causa provável, Procedimento e Escalonamento | — | — |
 
-Nenhuma questão aberta bloqueia o início da implementação.
+Todas as questões foram resolvidas durante a implementação; nenhuma permanece aberta.
