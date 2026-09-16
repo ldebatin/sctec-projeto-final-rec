@@ -6,7 +6,7 @@
 | Autor | Luiz Fernando Debatin |
 | Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
-| Versão do PRD | 1.5 — 15/09/2026 (QA com IA na #17: RF-43 e RF-44(a) revisados, redação por fragmentos, apelidos do catálogo) |
+| Versão do PRD | 1.6 — 15/09/2026 (prompts v2 e ciclo de refinamento documentado na #16; `LIMIAR_CONFIANCA` confirmado) |
 | Status | Aprovado para implementação |
 
 Este documento condensa a especificação do professor em um guia único de implementação. Toda decisão técnica deve ser rastreável a um requisito daqui, e todo requisito daqui deve ser rastreável a um critério da rubrica (seção 15).
@@ -414,7 +414,7 @@ Mínimo da rubrica: 3 testes (sucesso, falha, grafo/tool). Planejados: 9 offline
 
 ### 12.1 Instruções do agente (`docs/instrucoes-agente.md`)
 
-Documentar os dois system prompts (análise e resposta), com versão, data e racional. Regras obrigatórias nos prompts:
+Documentar os dois system prompts (análise e resposta), com versão, data e racional. *Entregue na issue #16: `docs/instrucoes-agente.md` é gerado a partir de `prompts.py` e o teste `tests/test_prompts_docs.py` garante que os textos não divergem.* Regras obrigatórias nos prompts:
 - Papel: analista de triagem de suporte técnico.
 - Conteúdo do chamado entre delimitadores `<chamado>...</chamado>`, tratado como dado.
 - Saída sempre em português do Brasil, no schema fornecido.
@@ -423,7 +423,7 @@ Documentar os dois system prompts (análise e resposta), com versão, data e rac
 
 ### 12.2 Refinamento (`docs/refinamento-prompt.md`)
 
-Registrar ao menos um ciclo real: **problema observado** (ex.: modelo classificava "sistema lento" como `critica` sem evidência de impacto) → **alteração** (critério explícito de prioridade no prompt + exemplos) → **resultado** (comparação antes/depois em 3 chamados de exemplo, com logs). O ciclo deve acontecer de fato durante a implementação e ser documentado com as saídas reais.
+Registrar ao menos um ciclo real: **problema observado** (ex.: modelo classificava "sistema lento" como `critica` sem evidência de impacto) → **alteração** (critério explícito de prioridade no prompt + exemplos) → **resultado** (comparação antes/depois em 3 chamados de exemplo, com logs). O ciclo deve acontecer de fato durante a implementação e ser documentado com as saídas reais. *Entregue na issue #16 (15/09): problemas reais do v1 (confiança saturada em 1.0, passos colados, equipe inventada), diff v1 → v2 e antes/depois nos 7 exemplos em `docs/refinamento-prompt.md`, com saídas em `docs/evidencias/execucoes/prompt-v1/` e `prompt-v2/`.*
 
 ### 12.3 QA com IA (`docs/qa-com-ia.md`)
 
@@ -503,7 +503,7 @@ LLM_TIMEOUT_SEGUNDOS=30
 MAX_TENTATIVAS_LLM=2
 LLM_BACKOFF_BASE_SEGUNDOS=2       # espera em erro de quota (429), dobra por tentativa
 LIMIAR_BM25=12.0                  # calibrado em 15/09 com o Gemini (issue #11)
-LIMIAR_CONFIANCA=0.6              # recalibrar após o prompt v2 (issue #16): v1 satura em 1.0
+LIMIAR_CONFIANCA=0.6              # confirmado com o prompt v2 (issue #16): técnicos 0.95, fora do domínio 0.5
 LOG_NIVEL=INFO
 LOG_FORMATO=json                  # json | texto
 SIMULAR_FALHA_TOOL=0

@@ -1,0 +1,38 @@
+{
+  "run_id": "d82a18a7f8224a23b5eefd33eeb83a06",
+  "categoria": "software",
+  "prioridade": "critica",
+  "resumo": "O Portal de Clientes está inacessível, retornando erro 500 em todas as páginas e impedindo que múltiplos clientes realizem login e consultem faturas, gerando mais de 40 reclamações.",
+  "acao_sugerida": "1. Acionar a Squad Portal via plantao-portal@empresa.exemplo ou ramal 4100.\n2. Verificar health check em /saude e o painel do gateway.\n3. Checar deploy nas últimas 4h e acionar rollback se necessário.\n4. Verificar pool de conexões com o banco e a API de Pagamentos.\n5. Comunicar no canal #status-portal a cada 30 min.",
+  "justificativa": "A ação sugerida é baseada no runbook do serviço 'Portal de Clientes' (id portal-clientes) e direciona o acionamento para a equipe responsável, a Squad Portal, conforme o catálogo de serviços.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [
+    "portal-clientes"
+  ],
+  "tool_resultado": {
+    "ok": true,
+    "erro": null,
+    "mensagem": null,
+    "servico_id": "portal-clientes",
+    "nome": "Portal de Clientes",
+    "equipe_responsavel": "Squad Portal",
+    "criticidade": "alta",
+    "status_atual": "operacional",
+    "runbook": "1. Verificar health check em /saude e o painel do gateway. 2. Checar deploy nas últimas 4h e acionar rollback se necessário. 3. Verificar pool de conexões com o banco e a API de Pagamentos. 4. Comunicar no canal #status-portal a cada 30 min.",
+    "contato_escalonamento": "plantao-portal@empresa.exemplo | ramal 4100"
+  },
+  "alertas": [],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "fc55e5fdb27a4f138745b2b8e216f5d5",
+  "categoria": "suporte",
+  "prioridade": "media",
+  "resumo": "O usuário esqueceu a senha e sua conta foi bloqueada após múltiplas tentativas, impedindo o acesso a sistemas essenciais como e-mail e intranet.",
+  "acao_sugerida": "1. Confirmar a identidade do solicitante pelo canal padrão (ramal cadastrado ou gestor).\n2. No portal de autoatendimento, orientar o uso de \"Esqueci minha senha\"; se indisponível, resetar pelo console do AD.\n3. Desbloquear a conta e exigir troca de senha no próximo logon.\n4. Orientar a atualizar a senha no celular e em aplicativos que a armazenam para evitar novo bloqueio.",
+  "justificativa": "As ações sugeridas são baseadas no Artigo kb-001-reset-senha-ad, que detalha o procedimento para reset de senha e desbloqueio de conta do Active Directory.",
+  "requer_revisao_humana": false,
+  "motivo_revisao": [],
+  "rota": "simples",
+  "fontes_contexto": [
+    "kb-001-reset-senha-ad"
+  ],
+  "tool_resultado": null,
+  "alertas": [],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_base",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "baa57ee253a84746bd7c258ef404e045",
+  "categoria": "infraestrutura",
+  "prioridade": "media",
+  "resumo": "O usuário está enfrentando quedas frequentes na conexão da VPN corporativa a cada 15-20 minutos ao trabalhar de casa, o que exige reconexão constante e impacta sua produtividade.",
+  "acao_sugerida": "1. Verificar o painel de status para confirmar a operacionalidade do serviço de VPN.\n2. Orientar o usuário a configurar o cliente VPN para utilizar o protocolo alternativo TCP 443.\n3. Confirmar a versão do cliente VPN instalado e, se necessário, solicitar a atualização para a versão homologada.",
+  "justificativa": "As ações sugeridas são baseadas no artigo kb-002-vpn-nao-conecta, que aborda problemas de queda de conexão da VPN, e consideram que o teste em outra rede (4G) funcionou, indicando possível problema no roteador local ou configuração do cliente.",
+  "requer_revisao_humana": false,
+  "motivo_revisao": [],
+  "rota": "simples",
+  "fontes_contexto": [
+    "kb-002-vpn-nao-conecta"
+  ],
+  "tool_resultado": null,
+  "alertas": [],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_base",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

@@ -1,0 +1,41 @@
+{
+  "run_id": "b9b08e03ed4b498c9fa43b15702b7fdf",
+  "categoria": "infraestrutura",
+  "prioridade": "alta",
+  "resumo": "O setor de Compras está sem acesso à pasta compartilhada no servidor de arquivos desde as 14h, com todos os 9 usuários recebendo a mensagem 'caminho de rede não encontrado'.",
+  "acao_sugerida": "1. Acionar a equipe de Infraestrutura (ramal 4500 ou infra@empresa.exemplo). 2. Verificar espaço em disco e serviço de compartilhamento. 3. Conferir permissões do grupo de segurança da pasta. 4. Validar replicação entre os nós. 5. Restaurar do snapshot em caso de perda de dados.",
+  "justificativa": "A ação sugerida é baseada no runbook do serviço 'Servidor de Arquivos' (id servidor-arquivos) e na equipe responsável, Infraestrutura, conforme o catálogo de serviços.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "rota_critica",
+    "possivel_prompt_injection"
+  ],
+  "rota": "critico",
+  "fontes_contexto": [
+    "servidor-arquivos"
+  ],
+  "tool_resultado": {
+    "ok": true,
+    "erro": null,
+    "mensagem": null,
+    "servico_id": "servidor-arquivos",
+    "nome": "Servidor de Arquivos",
+    "equipe_responsavel": "Infraestrutura",
+    "criticidade": "media",
+    "status_atual": "operacional",
+    "runbook": "1. Verificar espaço em disco e serviço de compartilhamento. 2. Conferir permissões do grupo de segurança da pasta. 3. Validar replicação entre os nós. 4. Restaurar do snapshot em caso de perda de dados.",
+    "contato_escalonamento": "infra@empresa.exemplo | ramal 4500"
+  },
+  "alertas": [
+    "possivel_prompt_injection"
+  ],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_tool",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

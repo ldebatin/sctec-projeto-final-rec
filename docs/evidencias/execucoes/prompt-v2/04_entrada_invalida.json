@@ -1,0 +1,24 @@
+{
+  "run_id": "742eff5445004e06bb01a9837e519eb4",
+  "categoria": "indefinido",
+  "prioridade": "media",
+  "resumo": "Não foi possível triar automaticamente: entrada inválida.",
+  "acao_sugerida": "Encaminhar para triagem manual. Último erro: entrada_invalida: descricao: String should have at least 20 characters",
+  "justificativa": null,
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "falha_tratada"
+  ],
+  "rota": "falha",
+  "fontes_contexto": [],
+  "tool_resultado": null,
+  "alertas": [],
+  "erros": [
+    "entrada_invalida: descricao: String should have at least 20 characters"
+  ],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "tratar_falha"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

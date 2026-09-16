@@ -1,0 +1,28 @@
+{
+  "run_id": "4b3ffa42d6cf4e8199f8cea83005e955",
+  "categoria": "indefinido",
+  "prioridade": "baixa",
+  "resumo": "O usuário busca informações sobre o procedimento para formalizar um pedido de férias, incluindo os passos necessários e as aprovações requeridas.",
+  "acao_sugerida": "1. Encaminhar para triagem manual.",
+  "justificativa": "Não foi encontrado contexto relevante para este tipo de solicitação, e o chamado não é de natureza técnica.",
+  "requer_revisao_humana": true,
+  "motivo_revisao": [
+    "categoria_indefinida",
+    "confianca_baixa"
+  ],
+  "rota": "simples",
+  "fontes_contexto": [],
+  "tool_resultado": null,
+  "alertas": [
+    "sem_contexto_relevante"
+  ],
+  "erros": [],
+  "caminho_percorrido": [
+    "validar_entrada",
+    "analisar_chamado",
+    "classificar_risco",
+    "consultar_base",
+    "gerar_resposta"
+  ],
+  "modelo": "google_genai:gemini-2.5-flash"
+}

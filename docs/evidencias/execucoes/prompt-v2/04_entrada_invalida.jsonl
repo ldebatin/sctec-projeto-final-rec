@@ -1,0 +1,7 @@
+{"timestamp": "2026-09-16T00:24:47.809Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "execucao_iniciada", "titulo": "Sistema com erro", "origem": "arquivo:04_entrada_invalida.json"}
+{"timestamp": "2026-09-16T00:24:47.816Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "node_inicio", "node": "validar_entrada"}
+{"timestamp": "2026-09-16T00:24:47.816Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "node_fim", "node": "validar_entrada", "duracao_ms": 0.2, "valida": false, "erros": 1}
+{"timestamp": "2026-09-16T00:24:47.817Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "roteamento", "origem": "validar_entrada", "decisao": "tratar_falha", "motivo": "entrada_invalida: descricao: String should have at least 20 characters"}
+{"timestamp": "2026-09-16T00:24:47.817Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "node_inicio", "node": "tratar_falha"}
+{"timestamp": "2026-09-16T00:24:47.817Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "node_fim", "node": "tratar_falha", "duracao_ms": 0.0, "erros": 1}
+{"timestamp": "2026-09-16T00:24:47.817Z", "run_id": "742eff5445004e06bb01a9837e519eb4", "nivel": "INFO", "evento": "execucao_finalizada", "rota": "falha", "prioridade": "media", "requer_revisao_humana": true, "duracao_total_ms": 8.0}
