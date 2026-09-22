@@ -333,3 +333,19 @@ Convenções:
 - **Prompt:**
   > Confira se há pendência de implementação: requisitos P0, P1 e P2 do PRD contra o código, TODOs em src/ e tests/, questões abertas da seção 21 e divergências entre a árvore da seção 13 e os arquivos reais. Se só houver drift de documentação, atualize o PRD para 1.8: reescreva a árvore da seção 13 com os arquivos reais (16 arquivos de teste, tools/, dependabot.yml, cenarios.md, roteiro-video.md, checklist-entrega.md), anote RF-71 e RF-72 como entregues na issue #7 e risque Q2 e Q3 como resolvidas com a versão travada das dependências e o Python fixado. Verifique que a árvore só cita arquivos existentes e registre a entrada no diário.
 - **Resultado:** nenhuma pendência de implementação (todos os RF e RNF entregues, sem TODO no código). PRD 1.8 com a seção 13 conferida automaticamente contra o disco, RF-71/72 anotados, Q2/Q3 resolvidas e a frase final da seção 21 atualizada.
+
+### P-044 · Nome canônico do repositório e remoção do rótulo de recuperação (PR #44)
+- **Origem:** usuário ("torne o repositório e o project públicos" → "faça a atualização e remova qualquer menção a recuperação")
+- **Objetivo:** critério 1 da rubrica: dar ao professor acesso ao repositório e deixar as referências internas apontando para o nome real, sem o rótulo acadêmico.
+- **Prompt:**
+  > torne o repositório e o project públicos … faça a atualização e remova qualquer menção a recuperação
+- **Decisão do aluno:** a IA apontou que "recuperação" aparecia em dois sentidos — o rótulo acadêmico e a *recuperação de informação* do BM25 — e que `docs/prompts.md` cita prompts digitados de fato. O aluno optou por remover só o sentido acadêmico e preservar as citações literais do diário, que são registro histórico exigido pela especificação.
+- **Resultado:** repositório e [Project](https://github.com/users/ldebatin/projects/6) públicos, confirmado sem autenticação (`private: false`). Nome canônico `sctec-projeto-final-rec` em 9 arquivos (a URL antiga só funcionava por redirecionamento 301). Rótulo removido do README §1, do PRD e do nome do Project. Preservados o vocabulário técnico de BM25 e as citações das entradas P-001 e P-002.
+
+### P-045 · Link do vídeo no README e encerramento da entrega (issue #20)
+- **Origem:** usuário ("segue link do video … não esqueça remover o roteiro.md e atualizar os issues restantes para done")
+- **Objetivo:** critério 1 da rubrica (vídeo de demonstração) e fechamento da milestone "Fase 6 · Vídeo e entrega".
+- **Prompt:**
+  > segue link do video https://www.youtube.com/watch?v=yzpE_z3GXCw , não esqueça remover o roteiro.md e atualizar os issues restantes para done. Faça uma ultima validação para garantir que o readme está atualizado com todas as informações do projeto
+- **Decisão do aluno:** a IA verificou o link e apontou que o título no YouTube ("sctec-codementor") é o de outro projeto do aluno. O aluno confirmou que o vídeo é o correto e que só o título ficou desatualizado.
+- **Resultado:** README §12 com o link e o resumo dos 8 itens do item 5.4; `docs/roteiro-video.md` removido junto com todas as referências a ele (README §12 e §13, árvore e tabela da rubrica do PRD, checklist); checklist com os três itens de vídeo fechados. Issues #20 e #21 em Done e milestone encerrada.

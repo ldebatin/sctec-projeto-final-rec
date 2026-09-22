@@ -101,13 +101,12 @@ Comandos executados sobre **todos** os commits e branches (`git log --all -p`):
 |---|---|---|
 | README permite compreender, configurar, executar, testar e avaliar | ✅ | Validado em clone limpo na issue #18 e novamente hoje (seção 1). |
 | README inclui arquitetura, tool, contexto, cenários, evidências de QA, extensões e limitações | ✅ | README §2 a §11. |
-| Vídeo de até 10 minutos publicado como não listado | ⏳ aluno | Roteiro pronto em [`roteiro-video.md`](roteiro-video.md) (issue #20). |
-| Vídeo demonstra fluxo principal, decisão condicional, tool, contexto, falha, testes e extensões | ⏳ aluno | Mapeamento dos 8 itens do item 5.4 na tabela do roteiro. |
-| Links do repositório e do vídeo submetidos no AVA antes do prazo | ⏳ aluno | 18/09/2026 às 22h. |
+| Vídeo de até 10 minutos publicado como não listado | ✅ | [Publicado como não listado](https://www.youtube.com/watch?v=yzpE_z3GXCw), link no README §12 (issue #20). |
+| Vídeo demonstra fluxo principal, decisão condicional, tool, contexto, falha, testes e extensões | ✅ | Os 8 itens do item 5.4 percorridos no vídeo; resumo em README §12. |
+| Links do repositório e do vídeo submetidos no AVA antes do prazo | ⏳ aluno | Prazo era 18/09/2026 às 22h; submeter os dois links (repositório e vídeo). |
 
 ## 4. O que falta antes da submissão
 
-1. **Vídeo** (issue #20): ensaio cronometrado, gravação, publicação no YouTube como não listado, teste do link em janela anônima.
-2. **Link do vídeo no README §12**, por branch e PR que fecha a #20 (o assistente pode fazer ao receber o link), com a entrada correspondente em [`prompts.md`](prompts.md).
-3. **Submissão no AVA**: link do repositório (`https://github.com/ldebatin/sctec-projeto-final-rec`) e link do vídeo, até 18/09/2026 às 22h.
-4. Depois da submissão: fechar as issues #20 e #21, mover para Done e encerrar a milestone "Fase 6 · Vídeo e entrega".
+1. **Submissão no AVA**: link do repositório (`https://github.com/ldebatin/sctec-projeto-final-rec`) e link do vídeo (`https://www.youtube.com/watch?v=yzpE_z3GXCw`). O prazo original era 18/09/2026 às 22h.
+
+Todo o resto está concluído: repositório e Project públicos, vídeo publicado e referenciado no README §12, issues #20 e #21 fechadas e milestone "Fase 6 · Vídeo e entrega" encerrada.
