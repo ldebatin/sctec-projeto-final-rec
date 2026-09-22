@@ -320,9 +320,9 @@ Duas extensões distintas do item 4.9 da especificação; nenhuma delas cumpre r
 
 ## 12. Vídeo de demonstração
 
-> Link do vídeo (não listado, até 10 minutos): **a preencher na issue #20**.
+> **[Assistir à demonstração](https://www.youtube.com/watch?v=yzpE_z3GXCw)** (não listado, até 10 minutos).
 
-Roteiro com blocos, tempos, comandos exatos e o mapeamento para os 8 itens do item 5.4 da especificação: [`docs/roteiro-video.md`](docs/roteiro-video.md).
+O vídeo percorre os 8 itens do item 5.4 da especificação: fluxo principal de ponta a ponta, decisão condicional do grafo, chamada da tool, uso do contexto recuperado, cenário de falha tratada, suíte de testes, e as duas extensões (CI e prompt injection).
 
 ## 13. Estrutura do repositório
 
@@ -348,7 +348,6 @@ sctec-projeto-final-rec/
 │   ├── qa-com-ia.md           # revisão com IA e decisões do aluno
 │   ├── extensoes.md           # E1 e E2
 │   ├── prompts.md             # diário de prompts de desenvolvimento
-│   ├── roteiro-video.md       # blocos, tempos e comandos do vídeo
 │   ├── checklist-entrega.md   # revisão final item a item da especificação
 │   └── evidencias/            # índice, saídas e logs reais, testes.txt, registros do CI
 └── logs/                      # gerado em execução, ignorado pelo Git

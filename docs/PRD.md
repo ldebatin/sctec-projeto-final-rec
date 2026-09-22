@@ -495,7 +495,6 @@ sctec-projeto-final-rec/
 │   ├── refinamento-prompt.md
 │   ├── qa-com-ia.md
 │   ├── extensoes.md
-│   ├── roteiro-video.md
 │   ├── checklist-entrega.md      # revisão final item a item da especificação
 │   └── evidencias/               # README.md (índice), testes.txt, ci/, execucoes/prompt-v1/, execucoes/prompt-v2/
 └── logs/ (gitignored)
@@ -525,7 +524,7 @@ SIMULAR_FALHA_TOOL=0
 
 | Critério | Peso | Evidência principal | Requisitos |
 |---|---|---|---|
-| 1. Vídeo | 0,50 | link no README, ≤ 10 min, roteiro em `docs/roteiro-video.md` | seção 17 |
+| 1. Vídeo | 0,50 | [link no README §12](https://www.youtube.com/watch?v=yzpE_z3GXCw), ≤ 10 min, não listado | seção 17 |
 | 2. GitHub | 0,50 | commits incrementais, `main` final, `uv.lock`, `.env.example` | RNF-01, RNF-06 |
 | 3. README | 0,50 | seções obrigatórias do item 5.2 da espec | seção 16 |
 | 4. Aplicação funcional | 1,00 | CLI executa 7 exemplos; saída `ResultadoTriagem` | RF-01…05 |
