@@ -46,7 +46,7 @@ Comandos executados sobre **todos** os commits e branches (`git log --all -p`):
 
 | Item | Status | Evidência |
 |---|---|---|
-| Repositório no GitHub com acesso garantido ao professor | ⚠️ **pendente** | O repositório está **privado** e tem um único colaborador (o aluno). Antes de submeter: *Settings → General → Danger Zone → Change visibility → Public*, ou *Settings → Collaborators → Add people* com o usuário do professor. Depois, abrir https://github.com/ldebatin/sctec-projeto-recuperacao em janela anônima para confirmar. |
+| Repositório no GitHub com acesso garantido ao professor | ✅ | Repositório **público** desde 21/09/2026, confirmado sem autenticação (`GET /repos/ldebatin/sctec-projeto-final-rec` → `private: false`). O [Project](https://github.com/users/ldebatin/projects/6) também é público. |
 | Commits incrementais com mensagens claras | ✅ | 48 commits na `main` (29 sem contar merges) de 11/09 a 16/09, 19 pull requests mergeados, um por issue, com o kanban do [Project](https://github.com/users/ldebatin/projects/6) percorrido. Prefixos `feat:`, `fix:`, `docs:`, `ci:`. |
 | Versão final e funcional na `main` | ✅ | Seção 1 acima; CI verde na `main` ([`evidencias/ci/`](evidencias/ci/)). |
 | Nenhuma chave, token, senha, `.env` ou dado sensível versionado | ✅ | Seção 2 acima. |
@@ -107,8 +107,7 @@ Comandos executados sobre **todos** os commits e branches (`git log --all -p`):
 
 ## 4. O que falta antes da submissão
 
-1. **Acesso do professor** ao repositório: tornar público ou adicionar como colaborador, e confirmar em janela anônima.
-2. **Vídeo** (issue #20): ensaio cronometrado, gravação, publicação no YouTube como não listado, teste do link em janela anônima.
-3. **Link do vídeo no README §12**, por branch e PR que fecha a #20 (o assistente pode fazer ao receber o link), com a entrada correspondente em [`prompts.md`](prompts.md).
-4. **Submissão no AVA**: link do repositório (`https://github.com/ldebatin/sctec-projeto-recuperacao`) e link do vídeo, até 18/09/2026 às 22h.
-5. Depois da submissão: fechar as issues #20 e #21, mover para Done e encerrar a milestone "Fase 6 · Vídeo e entrega".
+1. **Vídeo** (issue #20): ensaio cronometrado, gravação, publicação no YouTube como não listado, teste do link em janela anônima.
+2. **Link do vídeo no README §12**, por branch e PR que fecha a #20 (o assistente pode fazer ao receber o link), com a entrada correspondente em [`prompts.md`](prompts.md).
+3. **Submissão no AVA**: link do repositório (`https://github.com/ldebatin/sctec-projeto-final-rec`) e link do vídeo, até 18/09/2026 às 22h.
+4. Depois da submissão: fechar as issues #20 e #21, mover para Done e encerrar a milestone "Fase 6 · Vídeo e entrega".

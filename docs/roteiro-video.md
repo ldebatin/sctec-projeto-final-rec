@@ -20,7 +20,7 @@ Vídeo de até 10 minutos, publicado no YouTube como **não listado**, com link 
 1. **Ambiente.** Na raiz do repositório, `.env` com a `GOOGLE_API_KEY` real e `LOG_FORMATO=texto` (o padrão é `json`; em texto os logs ficam legíveis na tela). Nunca mostrar o conteúdo do `.env` nem `env | grep KEY`.
 2. **Aquecer.** Rodar uma vez cada comando dos blocos B, C, D e G para deixar o cache do uv pronto e conferir que as saídas batem com [`cenarios.md`](cenarios.md). Categoria, impacto e texto podem variar entre execuções do modelo; rota, prioridade final e revisão humana não, porque vêm das regras. Se o 02 vier com impacto diferente, não importa: a rota continua `critico`.
 3. **Terminal.** Fonte de 16 pt ou maior, tema com contraste, janela de uns 120 colunas, `clear` entre blocos. Cronômetro visível fora da área gravada.
-4. **Navegador** com abas abertas, nesta ordem: README do repositório (rolado até o diagrama), [Actions](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml), `docs/qa-com-ia.md`, `docs/refinamento-prompt.md`, `docs/evidencias/README.md`.
+4. **Navegador** com abas abertas, nesta ordem: README do repositório (rolado até o diagrama), [Actions](https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml), `docs/qa-com-ia.md`, `docs/refinamento-prompt.md`, `docs/evidencias/README.md`.
 5. **Tempo do modelo.** Cada chamado leva de 4 a 13 s (duas chamadas ao Gemini). Use a espera para narrar o que o log está mostrando; não corte.
 
 ## Blocos

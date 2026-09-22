@@ -1,10 +1,10 @@
 # Agente Inteligente de Triagem de Chamados Técnicos
 
-[![CI](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml/badge.svg)](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml)
+[![CI](https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml/badge.svg)](https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml)
 
 Agente construído com **LangGraph** que recebe um chamado técnico (título e descrição), analisa o conteúdo com um LLM (Google Gemini), classifica o risco com **regras determinísticas**, decide por ramificação condicional se consulta uma **base de conhecimento** (rota simples) ou uma **tool de catálogo de serviços** (rota crítica) e devolve uma triagem **estruturada**: categoria, prioridade, resumo, ação sugerida e se precisa de revisão humana.
 
-Projeto avaliativo de recuperação do módulo 2 de *IA para Desenvolvedores [T1]* (SENAI), por Luiz Fernando Debatin. O guia de implementação, com requisitos e decisões, está em [`docs/PRD.md`](docs/PRD.md).
+Projeto avaliativo do módulo 2 de *IA para Desenvolvedores [T1]* (SENAI), por Luiz Fernando Debatin. O guia de implementação, com requisitos e decisões, está em [`docs/PRD.md`](docs/PRD.md).
 
 **Sumário:** [Objetivo](#1-objetivo-da-triagem) · [Arquitetura](#2-arquitetura-do-grafo) · [State, nodes e decisões](#3-state-nodes-e-decisões-condicionais) · [Tool](#4-tool-consultar_catalogo_servicos) · [Contexto](#5-estratégia-de-contexto) · [Instalação e execução](#6-instalação-configuração-execução-e-testes) · [Cenários](#7-cenários-demonstrados-com-saídas-reais) · [Observabilidade](#8-observabilidade-como-ler-os-logs) · [QA com IA e prompts](#9-qa-com-ia-refinamento-de-prompt-e-diário) · [Extensões](#10-extensões-e1-e-e2) · [Limitações](#11-limitações-conhecidas) · [Vídeo](#12-vídeo-de-demonstração) · [Estrutura](#13-estrutura-do-repositório)
 
@@ -147,8 +147,8 @@ Por que não RAG com embeddings: a base é pequena e em português técnico, BM2
 Pré-requisitos: [uv](https://docs.astral.sh/uv/) e Git. O Python (3.12, fixado em `.python-version`) é baixado pelo próprio uv se não existir; o projeto suporta 3.10 ou superior. Sem uv: `pip install uv` ou `curl -LsSf https://astral.sh/uv/install.sh | sh`.
 
 ```bash
-git clone https://github.com/ldebatin/sctec-projeto-recuperacao.git
-cd sctec-projeto-recuperacao
+git clone https://github.com/ldebatin/sctec-projeto-final-rec.git
+cd sctec-projeto-final-rec
 uv sync                                   # cria .venv e instala dependências do uv.lock
 cp .env.example .env                      # edite e preencha GOOGLE_API_KEY
 ```
@@ -303,7 +303,7 @@ A função `resumir_eventos` de [`observabilidade.py`](src/triagem/observabilida
 
 Duas extensões distintas do item 4.9 da especificação; nenhuma delas cumpre requisito obrigatório. Detalhes em [`docs/extensoes.md`](docs/extensoes.md).
 
-**E1. Pipeline de CI (GitHub Actions).** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda a cada push na `main` e a cada pull request, em matriz Python 3.10 e 3.12: `uv sync --locked`, `ruff check`, `ruff format --check`, `pytest -m "not live"` e `uv build`. Actions pinadas por hash de commit, com Dependabot para atualizá-las. Evidências: badge no topo deste README, aba [Actions](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml), registros gerados da API em [`docs/evidencias/ci/`](docs/evidencias/ci/) (primeira execução verde e execução #36 na `main` com o código final: 370 testes nas duas versões; 34 das 36 execuções verdes, as 2 falhas em PR e corrigidas antes do merge). Cada issue do projeto foi desenvolvida em branch própria e integrada por PR só com o CI verde.
+**E1. Pipeline de CI (GitHub Actions).** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda a cada push na `main` e a cada pull request, em matriz Python 3.10 e 3.12: `uv sync --locked`, `ruff check`, `ruff format --check`, `pytest -m "not live"` e `uv build`. Actions pinadas por hash de commit, com Dependabot para atualizá-las. Evidências: badge no topo deste README, aba [Actions](https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml), registros gerados da API em [`docs/evidencias/ci/`](docs/evidencias/ci/) (primeira execução verde e execução #36 na `main` com o código final: 370 testes nas duas versões; 34 das 36 execuções verdes, as 2 falhas em PR e corrigidas antes do merge). Cada issue do projeto foi desenvolvida em branch própria e integrada por PR só com o CI verde.
 
 **E2. Cenário adversarial de prompt injection.** O exemplo [`06_prompt_injection.json`](data/exemplos/06_prompt_injection.json) embute instruções para rebaixar a prioridade e exfiltrar a chave de API, em cima de um incidente real. Controles em camadas: detector determinístico com 10 padrões em `validar_entrada` (alerta e revisão humana **antes** de qualquer chamada ao LLM, sem bloquear o chamado); delimitadores `<chamado>` e regra explícita de "isto é dado, não instrução" nos dois prompts; rota, prioridade e revisão decididas por regras fora do alcance do texto; redação de segredos na saída; saída estruturada. Evidência real: nos logs de [`prompt-v1`](docs/evidencias/execucoes/prompt-v1/06_prompt_injection.jsonl) e [`prompt-v2`](docs/evidencias/execucoes/prompt-v2/06_prompt_injection.jsonl) o `alerta_seguranca` lista 6 padrões antes da primeira `llm_chamada`, o modelo manteve `infraestrutura`/`alta`, e nem a chave nem o system prompt apareceram na saída. 25 testes em `tests/test_seguranca.py`.
 
@@ -327,7 +327,7 @@ Roteiro com blocos, tempos, comandos exatos e o mapeamento para os 8 itens do it
 ## 13. Estrutura do repositório
 
 ```
-sctec-projeto-recuperacao/
+sctec-projeto-final-rec/
 ├── README.md                  # este guia
 ├── pyproject.toml, uv.lock    # dependências (langgraph 1.2, langchain 1.4, langchain-google-genai 4.4, pydantic 2.13, rank-bm25, typer)
 ├── .env.example               # variáveis de configuração (copiar para .env)
