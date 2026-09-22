@@ -5,7 +5,7 @@ Registro gerado a partir da API do GitHub Actions em 16/09/2026. Complementa a [
 | Campo | Valor |
 |---|---|
 | Workflow | CI (`.github/workflows/ci.yml`) |
-| Execução | [#36](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/runs/35040249724) (id 35040249724) |
+| Execução | [#36](https://github.com/ldebatin/sctec-projeto-final-rec/actions/runs/35040249724) (id 35040249724) |
 | Evento | `push` na `main` (merge do PR #38, branch `issue-16-refinamento-prompt`) |
 | Commit | `d377839` — feat: prompts v2 com ciclo real de refinamento e instruções do agente documentadas (#38) |
 | Início | 2026-09-16T00:29:59Z (UTC) |
@@ -51,11 +51,11 @@ Os 2 testes desmarcados são os marcados com `live` (`tests/test_live.py`), que 
 
 | Execução | Branch | O que falhou | Correção |
 |---|---|---|---|
-| [#1](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/runs/34638475229) | `issue-13-ci` | *Set up job*: `astral-sh/setup-uv@v10` não resolve (a action não publica tag de major) | execução #2 verde no commit `41fe588` (pin em tag exata; depois trocado por hash na issue #23) |
+| [#1](https://github.com/ldebatin/sctec-projeto-final-rec/actions/runs/34638475229) | `issue-13-ci` | *Set up job*: `astral-sh/setup-uv@v10` não resolve (a action não publica tag de major) | execução #2 verde no commit `41fe588` (pin em tag exata; depois trocado por hash na issue #23) |
 | #16 | `issue-8-base-conhecimento` | etapa *Testes automatizados* nas duas versões de Python, commit `3718d69` | execução #17 verde no commit seguinte, `4a05bed`, ainda no PR |
 
 Isso é o comportamento esperado da extensão E1: a falha aparece no PR, antes de chegar à `main`.
 
 ## Como reproduzir
 
-Abrir um pull request para a `main` ou fazer push na `main`. A aba *Actions* lista todas as execuções: https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml. Os dados desta página vieram de `GET /repos/ldebatin/sctec-projeto-recuperacao/actions/runs/35040249724` e `/jobs`, mais os logs dos jobs.
+Abrir um pull request para a `main` ou fazer push na `main`. A aba *Actions* lista todas as execuções: https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml. Os dados desta página vieram de `GET /repos/ldebatin/sctec-projeto-final-rec/actions/runs/35040249724` e `/jobs`, mais os logs dos jobs.

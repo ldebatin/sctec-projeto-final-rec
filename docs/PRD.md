@@ -2,9 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Projeto | Situação de Aprendizagem (Recuperação) — IA para Desenvolvedores [T1], Módulo 2 |
+| Projeto | Situação de Aprendizagem — IA para Desenvolvedores [T1], Módulo 2 |
 | Autor | Luiz Fernando Debatin |
-| Repositório | https://github.com/ldebatin/sctec-projeto-recuperacao |
+| Repositório | https://github.com/ldebatin/sctec-projeto-final-rec |
 | Prazo de entrega | **18/09/2026 às 22h** (submissão no AVA: link do repositório + link do vídeo) |
 | Versão do PRD | 1.8 — 16/09/2026 (revisão final da #21: seção 13 alinhada ao repositório, RF-71 e RF-72 anotados como entregues, Q2 e Q3 marcadas como resolvidas) |
 | Status | Aprovado para implementação |
@@ -438,7 +438,7 @@ Lista cronológica de todos os prompts usados (ou que deveriam ter sido usados) 
 ## 13. Estrutura do repositório
 
 ```
-sctec-projeto-recuperacao/
+sctec-projeto-final-rec/
 ├── README.md
 ├── pyproject.toml
 ├── uv.lock

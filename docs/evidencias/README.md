@@ -79,4 +79,4 @@ done                                                   # o log de cada execuçã
 SIMULAR_FALHA_TOOL=1 uv run triagem triar --arquivo data/exemplos/02_portal_fora_do_ar.json
 ```
 
-Os registros de `ci/` vêm da API do GitHub Actions (`gh api repos/ldebatin/sctec-projeto-recuperacao/actions/runs/<id>` e `/jobs`).
+Os registros de `ci/` vêm da API do GitHub Actions (`gh api repos/ldebatin/sctec-projeto-final-rec/actions/runs/<id>` e `/jobs`).

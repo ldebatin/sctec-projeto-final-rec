@@ -73,7 +73,7 @@ Convenções:
 - **Objetivo:** iniciar o histórico incremental e transformar o PRD em um plano de trabalho rastreável.
 - **Prompt:**
   > 1 - Faça o commit inicial com o prd, 2 - crie um project no gitgub para esse repositório, 3 - Com base no prd divida em entregáveis e abra as issues desses entregáveis no project
-- **Resultado:** commit `d95bda2` (PRD, diário de prompts e `.gitignore`); Project "Triagem de Chamados — Recuperação SENAI" (https://github.com/users/ldebatin/projects/6) vinculado ao repositório; 21 issues abertas, todas no Project com status Todo.
+- **Resultado:** commit `d95bda2` (PRD, diário de prompts e `.gitignore`); Project "Triagem de Chamados — SENAI" (https://github.com/users/ldebatin/projects/6) vinculado ao repositório; 21 issues abertas, todas no Project com status Todo.
 
 ### P-010 · Decompor o PRD em entregáveis
 - **Origem:** reconstruído

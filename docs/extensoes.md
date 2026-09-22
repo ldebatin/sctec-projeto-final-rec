@@ -24,7 +24,7 @@ Duas extensões distintas do item 4.9 da especificação, escolhidas em 11/09/20
 
 **Como ver a evidência.**
 - Badge no topo do [README](../README.md) (visível para quem tem acesso ao repositório).
-- Aba *Actions* do repositório: https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml
+- Aba *Actions* do repositório: https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml
 - Registro da primeira execução verde em [`evidencias/ci/primeira-execucao-verde.md`](evidencias/ci/primeira-execucao-verde.md) (11/09, com a falha da execução #1 explicada) e da execução #36 na `main` sobre o código final em [`evidencias/ci/execucao-main-2026-09-16.md`](evidencias/ci/execucao-main-2026-09-16.md): 370 testes em Python 3.10 e 3.12, lint, formatação e build em 22 s. Até essa execução foram 36 execuções, 34 verdes e 2 falhas, ambas em pull request e corrigidas na branch antes do merge; nenhuma execução na `main` falhou.
 - Saída local da suíte completa, com os 2 testes `live` que o CI não roda, em [`evidencias/testes.txt`](evidencias/testes.txt).
 

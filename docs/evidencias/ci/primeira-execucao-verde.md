@@ -5,7 +5,7 @@ Registro gerado a partir da API do GitHub Actions logo após a execução.
 | Campo | Valor |
 |---|---|
 | Workflow | CI (`.github/workflows/ci.yml`) |
-| Execução | [#2](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/runs/34638572561) (id 34638572561) |
+| Execução | [#2](https://github.com/ldebatin/sctec-projeto-final-rec/actions/runs/34638572561) (id 34638572561) |
 | Evento | `pull_request` — PR #22 (`issue-13-ci` → `main`) |
 | Commit | `41fe588` — ci: pina versões exatas das actions (setup-uv não tem tag de major) |
 | Início | 2026-09-11T19:23:29Z (UTC) |
@@ -41,8 +41,8 @@ Registro gerado a partir da API do GitHub Actions logo após a execução.
 
 ## Histórico
 
-- Execução anterior [#1](https://github.com/ldebatin/sctec-projeto-recuperacao/actions/runs/34638475229) (commit `e9030d4`) falhou em *Set up job*: `astral-sh/setup-uv@v10` não resolve, pois a action publica apenas tags de release. Corrigido pinando `setup-uv@v10.1.0` e `checkout@v7.0.1`.
+- Execução anterior [#1](https://github.com/ldebatin/sctec-projeto-final-rec/actions/runs/34638475229) (commit `e9030d4`) falhou em *Set up job*: `astral-sh/setup-uv@v10` não resolve, pois a action publica apenas tags de release. Corrigido pinando `setup-uv@v10.1.0` e `checkout@v7.0.1`.
 
 ## Como reproduzir
 
-Abrir um pull request para a `main` ou fazer push na `main`. A aba *Actions* do repositório lista todas as execuções: https://github.com/ldebatin/sctec-projeto-recuperacao/actions/workflows/ci.yml
+Abrir um pull request para a `main` ou fazer push na `main`. A aba *Actions* do repositório lista todas as execuções: https://github.com/ldebatin/sctec-projeto-final-rec/actions/workflows/ci.yml
